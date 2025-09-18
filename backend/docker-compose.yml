@@ -1,0 +1,38 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: db_splitz
+    environment:
+      POSTGRES_DB: splitz
+      POSTGRES_USER: splitz
+      POSTGRES_PASSWORD: splitz
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_splitz:/var/lib/postgresql/data
+    networks:
+      - splitz
+    restart: unless-stopped
+
+  pgadmin:
+    container_name: pgadmin_splitz
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin_splitz:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    networks:
+      - splitz
+    restart: unless-stopped
+
+networks:
+  splitz:
+    driver: bridge
+
+volumes:
+  postgres_splitz:
+  pgadmin_splitz:
