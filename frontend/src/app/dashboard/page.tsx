@@ -93,6 +93,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
+    console.log(token);
     if (!token) return;
 
     (async () => {
@@ -107,8 +108,9 @@ export default function DashboardPage() {
         setData(real);
         setIsDemo(false);
       } catch {
+        console.log("Using demo data");
         // leave mock data
-        setIsDemo(true);
+        setIsDemo(false);
       }
     })();
   }, []);
