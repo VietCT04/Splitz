@@ -11,7 +11,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-    private record AuthReq(String username, String password) {
+    private record AuthReq(String name, String password) {
     }
 
     private record TokenRes(String accessToken) {
@@ -25,17 +25,16 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<Void> signup(@RequestBody AuthReq req) {
-        svc.signup(req.username(), req.password());
+        svc.signup(req.name(), req.password());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/login")
     public ResponseEntity<TokenRes> login(@RequestBody AuthReq req) {
-        String token = svc.login(req.username(), req.password());
+        String token = svc.login(req.name(), req.password());
         return ResponseEntity.ok(new TokenRes(token));
     }
 
-    // Useful for the frontend to test auth quickly
     @GetMapping("/me")
     public Map<String, Object> me(Authentication auth) {
         return Map.of("username", auth.getName(),

@@ -21,22 +21,20 @@ public class AuthService {
         this.repo = repo; this.encoder = encoder; this.jwt = jwt; this.authManager = am;
     }
 
-    public void signup(String username, String rawPassword) {
-        if (repo.findByUsername(username).isPresent()) throw new IllegalArgumentException("Username taken");
-        var u = new User();
-        u.setName(username);
+    public void signup(String name, String rawPassword) {
+        if (repo.findByName(name).isPresent()) throw new IllegalArgumentException("Username taken");
+        User u = new User();
+        u.setName(name);
         u.setPassword(encoder.encode(rawPassword));
         repo.save(u);
     }
 
-    public String login(String username, String password) {
-        // Let Spring validate creds (will call UDS + PasswordEncoder)
-        authManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        // If no exception → valid. Issue JWT using current authorities:
-        var user = repo.findByUsername(username).orElseThrow();
-        var principal = User.withUsername(user.getUsername())
-                .password(user.getPasswordHash())
+    public String login(String name, String password) {
+        authManager.authenticate(new UsernamePasswordAuthenticationToken(name, password));
+        var user = repo.findByName(name).orElseThrow();
+        var principal = org.springframework.security.core.userdetails.User.withUsername(user.getName())
+                .password(user.getPassword())
                 .build();
-        return jwt.issueAccess(principal.getUsername(), principal.getAuthorities());
+        return jwt.issueAccess(principal.getUsername());
     }
 }

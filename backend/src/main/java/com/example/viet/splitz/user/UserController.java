@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.awt.desktop.SystemSleepEvent;
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -19,5 +21,12 @@ public class UserController {
     public ResponseEntity<String> createNewUser(@RequestBody User user){
         userService.createNewUser(user);
         return ResponseEntity.ok("Create New User Succeeded");
+    }
+
+    @PostMapping("/delete")
+    public ResponseEntity<String> createNewUser(@RequestBody Long id){
+        System.out.println(id);
+        userService.deleteUserById(id);
+        return ResponseEntity.ok("Delete User Succeeded");
     }
 }

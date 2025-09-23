@@ -12,7 +12,7 @@ export default function LoginForm(): React.JSX.Element {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const body = {
-      email: String(fd.get("email") || ""),
+      name: String(fd.get("username") || ""),
       password: String(fd.get("password") || ""),
     };
 
@@ -35,17 +35,17 @@ export default function LoginForm(): React.JSX.Element {
     <form onSubmit={handleSubmit} className="mt-6 space-y-4">
       <div>
         <label
-          htmlFor="email"
+          htmlFor="name"
           className="block text-sm font-medium text-gray-700"
         >
-          Email
+          Name
         </label>
         <input
-          id="email"
-          name="email"
-          type="email"
+          id="username"
+          name="username"
+          type="text"
           required
-          placeholder="you@example.com"
+          placeholder="youabc123"
           className="mt-1 w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 focus:border-gray-900 focus:outline-none"
         />
       </div>

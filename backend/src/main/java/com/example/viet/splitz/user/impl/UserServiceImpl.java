@@ -17,4 +17,10 @@ public class UserServiceImpl implements UserService {
     public void createNewUser(User user) {
         userRepository.save(user);
     }
+
+    @Override
+    public void deleteUserById(Long id) {
+        User user = userRepository.getReferenceById(id);
+        userRepository.delete(user);
+    }
 }
