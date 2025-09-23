@@ -1,6 +1,9 @@
 A simple expense book where you create a group, log expenses, and the app automatically divides the total amount equally among all active members.
 
 Daily Logs:
+24/09/2025
+
+- Done JWT configuration and setup
 
 19/09/2025
 
