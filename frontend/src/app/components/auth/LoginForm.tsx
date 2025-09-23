@@ -26,7 +26,9 @@ export default function LoginForm(): React.JSX.Element {
       // show an error UI if you like
       return;
     }
-
+    const { accessToken } = await res.json();
+    localStorage.setItem("access_token", accessToken);
+    console.log(accessToken);
     // Replace so back button won't return to login
     router.replace(next);
   };
