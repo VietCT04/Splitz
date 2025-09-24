@@ -216,7 +216,7 @@ export default function GroupDetail({ params }: { params: { id: string } }) {
                     </div>
 
                     <div className="flex items-center gap-3">
-                      <span className="rounded-full bg-gray-100 px-2 py-1 text-xs font-semibold">
+                      <span className="rounded-full bg-gray-900 px-2 py-1 text-xs font-semibold">
                         ${e.amount.toFixed(2)}
                       </span>
                       <button className="rounded-xl border border-gray-300 px-3 py-1.5 text-sm text-gray-900 hover:bg-gray-50">
