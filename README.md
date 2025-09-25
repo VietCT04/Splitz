@@ -4,6 +4,9 @@ Daily Logs:
 24/09/2025
 
 - Done JWT configuration and setup
+- Learned and implemented behind the scene SecurityContext and Authentication (how to GET /groups only get groups that caller in, not all group without
+using the URL parameters or requestbody.
+- Developed Groups page.tsx and /groups/{id} page.tsx
 
 19/09/2025
 
