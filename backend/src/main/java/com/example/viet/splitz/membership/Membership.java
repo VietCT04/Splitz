@@ -26,6 +26,9 @@ public class Membership {
     @Column(nullable = false, updatable = false)
     private Instant joinedAt;
 
+    public Membership() {
+    }
+
     public Membership(Long id, User user, Group group, Instant joinedAt) {
         this.id = id;
         this.user = user;

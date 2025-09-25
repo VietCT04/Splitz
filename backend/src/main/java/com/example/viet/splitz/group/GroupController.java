@@ -28,8 +28,8 @@ public class GroupController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Group create(@RequestBody CreateGroupReq req) {
-        return service.create(req.name());
+    public Group create(@RequestBody CreateGroupReq req, Authentication authentication) {
+        return service.create(req.name(), authentication);
     }
 
     @GetMapping("/{id}")

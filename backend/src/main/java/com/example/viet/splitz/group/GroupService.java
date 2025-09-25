@@ -6,9 +6,11 @@ import com.example.viet.splitz.user.User;
 import com.example.viet.splitz.user.UserRepository;
 import com.example.viet.splitz.expense.Expense;
 import com.example.viet.splitz.expense.ExpenseRepository;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -26,13 +28,19 @@ public class GroupService {
         this.membershipRepository = membershipRepository;
     }
 
-    public Group create(String name) {
+    public Group create(String name, Authentication authentication) {
         if (groupRepository.existsByName(name)) {
             throw new IllegalArgumentException("Group name already exists");
         }
         Group g = new Group();
         g.setName(name);
-        return groupRepository.save(g);
+        groupRepository.save(g);
+        Membership membership = new Membership();
+        membership.setGroup(g);
+        membership.setUser(userRepository.findByName(authentication.getName()).orElseThrow());
+        membership.setJoinedAt(Instant.now());
+        membershipRepository.save(membership);
+        return g;
     }
 
     @Transactional(readOnly = true)
