@@ -22,7 +22,7 @@ const nav = [
 export default function Sidebar() {
   return (
     <aside className="hidden md:flex md:w-64 flex-col gap-4 border-r bg-white p-4 rounded-xl">
-      <div className="text-2xl font-bold text-gray-900">SplitMate</div>
+      <div className="text-2xl font-bold text-gray-900">Splitz</div>
       <nav className="flex-1">
         <ul className="space-y-1">
           {nav.map(({ href, label, icon: Icon }) => (

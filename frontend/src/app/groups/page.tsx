@@ -1,5 +1,5 @@
 "use client";
-
+const API = "http://localhost:8080";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import Sidebar from "../components/dashboard/Sidebar";
@@ -45,26 +45,22 @@ export default function GroupsPage() {
   const [query, setQuery] = useState("");
   const [tab, setTab] = useState<"all" | "owe" | "owed" | "settled">("all");
   const [openCreate, setOpenCreate] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Load real groups if you have a token
+  async function loadGroups(token: string) {
+    const res = await fetch(`${API}/groups`, {
+      headers: { Authorization: `Bearer ${token}` },
+      credentials: "omit",
+    });
+    if (!res.ok) throw new Error("Failed to load groups");
+    const data: Group[] = await res.json();
+    setGroups(data);
+    setIsDemo(false);
+  }
   useEffect(() => {
     const token = localStorage.getItem("access_token");
-    if (!token) return;
-
-    (async () => {
-      try {
-        const res = await fetch("http://localhost:8080/groups", {
-          headers: { Authorization: `Bearer ${token}` },
-          credentials: "omit",
-        });
-        if (!res.ok) throw new Error();
-        const data: Group[] = await res.json();
-        setGroups(data);
-        setIsDemo(false);
-      } catch {
-        setIsDemo(true);
-      }
-    })();
+    if (token) loadGroups(token).catch(() => setIsDemo(true));
   }, []);
 
   const filtered = useMemo(() => {
@@ -210,14 +206,45 @@ export default function GroupsPage() {
                 </h3>
                 <form
                   className="mt-4 space-y-3"
-                  onSubmit={(e) => {
+                  onSubmit={async (e) => {
                     e.preventDefault();
+                    setError(null);
                     const name =
                       new FormData(e.currentTarget)
                         .get("name")
                         ?.toString()
                         .trim() || "";
-                    if (name) addGroup(name);
+                    if (!name) {
+                      setError("Group name required");
+                      return;
+                    }
+
+                    const token = localStorage.getItem("access_token");
+                    if (!token) {
+                      setError("Please log in");
+                      return;
+                    }
+
+                    try {
+                      setSubmitting(true);
+                      const res = await fetch(`${API}/groups`, {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                          Authorization: `Bearer ${token}`,
+                        },
+                        body: JSON.stringify({ name }),
+                        credentials: "omit",
+                      });
+                      if (!res.ok) throw new Error("Create failed");
+
+                      await loadGroups(token); // <— refresh list
+                      setOpenCreate(false); // close modal
+                    } catch (err: any) {
+                      setError(err.message ?? "Something went wrong");
+                    } finally {
+                      setSubmitting(false);
+                    }
                   }}
                 >
                   <input
@@ -234,8 +261,11 @@ export default function GroupsPage() {
                     >
                       Cancel
                     </button>
-                    <button className="rounded-xl bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-black">
-                      Create
+                    <button
+                      className="rounded-xl bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-black"
+                      disabled={submitting}
+                    >
+                      {submitting ? "Creating..." : "Create"}
                     </button>
                   </div>
                 </form>
