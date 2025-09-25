@@ -131,16 +131,16 @@ export default function DashboardPage() {
             <input
               type="search"
               placeholder="Search"
-              className="w-full max-w-md rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-500"
+              className="w-full max-w-md rounded-xl border border-gray-900 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-500"
             />
             <div className="ml-4 flex items-center gap-2">
               <button className="inline-flex items-center gap-2 rounded-xl bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-black">
                 <Plus className="h-4 w-4" /> Add Expense
               </button>
-              <button className="inline-flex items-center gap-2 rounded-xl border border-gray-300 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50">
+              <button className="inline-flex items-center gap-2 rounded-xl border border-gray-900 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50">
                 <Wallet className="h-4 w-4" /> Settle Up
               </button>
-              <button className="inline-flex items-center gap-2 rounded-xl border border-gray-300 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50">
+              <button className="inline-flex items-center gap-2 rounded-xl border border-gray-900 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50">
                 <Users className="h-4 w-4" /> Create Group
               </button>
             </div>
@@ -178,7 +178,7 @@ export default function DashboardPage() {
                   <h3 className="text-sm font-medium text-gray-900">
                     Recent activity
                   </h3>
-                  <button className="rounded-lg border border-gray-300 px-2 py-1 text-xs">
+                  <button className="rounded-lg border border-gray-900 px-2 py-1 text-xs">
                     •••
                   </button>
                 </div>
@@ -205,7 +205,7 @@ export default function DashboardPage() {
                           <span className="rounded-full bg-gray-100 px-2 py-1 text-xs font-semibold">
                             ${a.amount.toFixed(2)}
                           </span>
-                          <button className="rounded-xl border border-gray-300 px-3 py-1.5 text-sm text-gray-900 hover:bg-gray-50">
+                          <button className="rounded-xl border border-gray-900 px-3 py-1.5 text-sm text-gray-900 hover:bg-gray-50">
                             Settle
                           </button>
                         </div>

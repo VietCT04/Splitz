@@ -119,7 +119,7 @@ export default function GroupDetail({ params }: { params: { id: string } }) {
             <div className="flex items-center gap-3">
               <Link
                 href="/groups"
-                className="inline-flex items-center gap-2 rounded-xl border border-gray-300 px-3 py-1.5 text-sm text-gray-900 hover:bg-gray-50"
+                className="inline-flex items-center gap-2 rounded-xl border border-gray-900 px-3 py-1.5 text-sm text-gray-900 hover:bg-gray-50"
               >
                 <ArrowLeft className="h-4 w-4" /> Back
               </Link>
@@ -134,7 +134,7 @@ export default function GroupDetail({ params }: { params: { id: string } }) {
             </div>
 
             <div className="flex items-center gap-2">
-              <button className="inline-flex items-center gap-2 rounded-xl border border-gray-300 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50">
+              <button className="inline-flex items-center gap-2 rounded-xl border border-gray-900 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50">
                 <Wallet className="h-4 w-4" /> Settle Up
               </button>
               <button
@@ -167,7 +167,7 @@ export default function GroupDetail({ params }: { params: { id: string } }) {
               {group.members.map((m) => (
                 <span
                   key={m.id}
-                  className="inline-flex items-center gap-2 rounded-full border border-gray-300 px-3 py-1 text-sm"
+                  className="inline-flex items-center gap-2 rounded-full border border-gray-900 px-3 py-1 text-sm"
                 >
                   <span className="h-2.5 w-2.5 rounded-full bg-gray-400" />
                   {m.name}
@@ -185,7 +185,7 @@ export default function GroupDetail({ params }: { params: { id: string } }) {
               <h2 className="text-sm font-medium text-gray-900">
                 Recent expenses
               </h2>
-              <button className="rounded-xl border border-gray-300 px-2 py-1 text-xs">
+              <button className="rounded-xl border border-gray-900 px-2 py-1 text-xs">
                 <MoreHorizontal className="h-4 w-4" />
               </button>
             </div>
@@ -219,7 +219,7 @@ export default function GroupDetail({ params }: { params: { id: string } }) {
                       <span className="rounded-full bg-gray-900 px-2 py-1 text-xs font-semibold">
                         ${e.amount.toFixed(2)}
                       </span>
-                      <button className="rounded-xl border border-gray-300 px-3 py-1.5 text-sm text-gray-900 hover:bg-gray-50">
+                      <button className="rounded-xl border border-gray-900 px-3 py-1.5 text-sm text-gray-900 hover:bg-gray-50">
                         Settle
                       </button>
                     </div>
@@ -246,7 +246,7 @@ export default function GroupDetail({ params }: { params: { id: string } }) {
                 >
                   + Add Expense
                 </button>
-                <button className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50">
+                <button className="w-full rounded-xl border border-gray-900 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50">
                   Settle Up
                 </button>
               </div>
@@ -262,7 +262,7 @@ export default function GroupDetail({ params }: { params: { id: string } }) {
                   </li>
                 ))}
               </ul>
-              <button className="mt-3 w-full rounded-xl border border-gray-300 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50">
+              <button className="mt-3 w-full rounded-xl border border-gray-900 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50">
                 Invite member
               </button>
             </div>
@@ -321,7 +321,7 @@ function AddExpenseModal({
             <input
               name="description"
               placeholder="e.g. Dinner"
-              className="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2"
+              className="mt-1 w-full rounded-xl border border-gray-900 px-3 py-2"
               autoFocus
             />
           </label>
@@ -335,7 +335,7 @@ function AddExpenseModal({
                 step="0.01"
                 min="0"
                 placeholder="0.00"
-                className="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2"
+                className="mt-1 w-full rounded-xl border border-gray-900 px-3 py-2"
               />
             </label>
 
@@ -345,7 +345,7 @@ function AddExpenseModal({
                 name="date"
                 type="date"
                 defaultValue={new Date().toISOString().slice(0, 10)}
-                className="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2"
+                className="mt-1 w-full rounded-xl border border-gray-900 px-3 py-2"
               />
             </label>
           </div>
@@ -354,7 +354,7 @@ function AddExpenseModal({
             <span className="text-gray-700">Paid by</span>
             <select
               name="paidBy"
-              className="mt-1 w-full rounded-xl border border-gray-300 bg-white px-3 py-2"
+              className="mt-1 w-full rounded-xl border border-gray-900 bg-white px-3 py-2"
               defaultValue=""
             >
               <option value="" disabled>
@@ -372,7 +372,7 @@ function AddExpenseModal({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl border border-gray-300 px-3 py-2 text-sm"
+              className="rounded-xl border border-gray-900 px-3 py-2 text-sm"
             >
               Cancel
             </button>

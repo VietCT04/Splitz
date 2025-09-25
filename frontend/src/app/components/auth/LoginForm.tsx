@@ -48,7 +48,7 @@ export default function LoginForm(): React.JSX.Element {
           type="text"
           required
           placeholder="youabc123"
-          className="mt-1 w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 focus:border-gray-900 focus:outline-none"
+          className="mt-1 w-full rounded-xl border border-gray-900 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 focus:border-gray-900 focus:outline-none"
         />
       </div>
 
@@ -65,7 +65,7 @@ export default function LoginForm(): React.JSX.Element {
           type="password"
           required
           placeholder="••••••••"
-          className="mt-1 w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 focus:border-gray-900 focus:outline-none"
+          className="mt-1 w-full rounded-xl border border-gray-900 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-400 focus:border-gray-900 focus:outline-none"
         />
       </div>
 

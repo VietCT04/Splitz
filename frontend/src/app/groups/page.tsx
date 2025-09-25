@@ -111,7 +111,7 @@ export default function GroupsPage() {
               onChange={(e) => setQuery(e.target.value)}
               type="search"
               placeholder="Search groups"
-              className="w-full max-w-md rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-500"
+              className="w-full max-w-md rounded-xl border border-gray-900 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-500"
             />
             <div className="flex items-center gap-2">
               <button className="inline-flex items-center gap-2 rounded-xl bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-black">
@@ -119,7 +119,7 @@ export default function GroupsPage() {
               </button>
               <button
                 onClick={() => setOpenCreate(true)}
-                className="inline-flex items-center gap-2 rounded-xl border border-gray-300 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50"
+                className="inline-flex items-center gap-2 rounded-xl border border-gray-900 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50"
               >
                 <Plus className="h-4 w-4" /> Create Group
               </button>
@@ -135,7 +135,7 @@ export default function GroupsPage() {
                 className={`rounded-xl border px-3 py-1.5 text-sm capitalize ${
                   tab === t
                     ? "bg-gray-900 text-white border-gray-900"
-                    : "border-gray-300 text-gray-900 hover:bg-gray-50"
+                    : "border-gray-900 text-gray-900 hover:bg-gray-50"
                 }`}
               >
                 {t}
@@ -186,7 +186,7 @@ export default function GroupsPage() {
                       </span>
                       <Link
                         href={`/groups/${g.id}`}
-                        className="rounded-xl border border-gray-300 px-3 py-1.5 text-sm text-gray-900 hover:bg-gray-50"
+                        className="rounded-xl border border-gray-900 px-3 py-1.5 text-sm text-gray-900 hover:bg-gray-50"
                       >
                         Open
                       </Link>
@@ -223,14 +223,14 @@ export default function GroupsPage() {
                   <input
                     name="name"
                     placeholder="Group name"
-                    className="w-full rounded-xl border border-gray-300 px-3 py-2"
+                    className="w-full rounded-xl border border-gray-900 px-3 py-2"
                     autoFocus
                   />
                   <div className="flex justify-end gap-2 pt-2">
                     <button
                       type="button"
                       onClick={() => setOpenCreate(false)}
-                      className="rounded-xl border border-gray-300 px-3 py-2 text-sm"
+                      className="rounded-xl border border-gray-900 px-3 py-2 text-sm text-gray-900"
                     >
                       Cancel
                     </button>
