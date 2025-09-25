@@ -1,5 +1,6 @@
 package com.example.viet.splitz.group;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.viet.splitz.expense.Expense;
@@ -7,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -22,7 +24,7 @@ public class GroupController {
     // DTOs
     public record CreateGroupReq(String name) {}
     public record RenameGroupReq(String name) {}
-    public record ExpenseReq(String description, Double amount) {}
+    public record ExpenseReq(String description, BigDecimal amount) {}
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -36,8 +38,8 @@ public class GroupController {
     }
 
     @GetMapping
-    public List<Group> list() {
-        return service.list();
+    public List<Group> list(Authentication authentication) {
+        return service.list(authentication.getName());
     }
 
     @PutMapping("/{id}")
@@ -49,18 +51,6 @@ public class GroupController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         service.delete(id);
-    }
-
-    @PostMapping("/{id}/users/{userId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void addUser(@PathVariable Long id, @PathVariable Long userId) {
-        service.addUser(id, userId);
-    }
-
-    @DeleteMapping("/{id}/users/{userId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void removeUser(@PathVariable Long id, @PathVariable Long userId) {
-        service.removeUser(id, userId);
     }
 
     @PostMapping("/{id}/expenses")

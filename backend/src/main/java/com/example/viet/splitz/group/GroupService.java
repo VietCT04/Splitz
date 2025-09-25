@@ -1,5 +1,7 @@
 package com.example.viet.splitz.group;
 
+import com.example.viet.splitz.membership.Membership;
+import com.example.viet.splitz.membership.MembershipRepository;
 import com.example.viet.splitz.user.User;
 import com.example.viet.splitz.user.UserRepository;
 import com.example.viet.splitz.expense.Expense;
@@ -12,33 +14,36 @@ import java.util.List;
 @Service
 @Transactional
 public class GroupService {
-    private final GroupRepository groups;
-    private final UserRepository users;
+    private final GroupRepository groupRepository;
+    private final UserRepository userRepository;
     private final ExpenseRepository expenses;
+    private final MembershipRepository membershipRepository;
 
-    public GroupService(GroupRepository groups, UserRepository users, ExpenseRepository expenses) {
-        this.groups = groups;
-        this.users = users;
+    public GroupService(GroupRepository groupRepository, UserRepository userRepository, ExpenseRepository expenses, MembershipRepository membershipRepository) {
+        this.groupRepository = groupRepository;
+        this.userRepository = userRepository;
         this.expenses = expenses;
+        this.membershipRepository = membershipRepository;
     }
 
     public Group create(String name) {
-        if (groups.existsByName(name)) {
+        if (groupRepository.existsByName(name)) {
             throw new IllegalArgumentException("Group name already exists");
         }
         Group g = new Group();
         g.setName(name);
-        return groups.save(g);
+        return groupRepository.save(g);
     }
 
     @Transactional(readOnly = true)
     public Group get(Long id) {
-        return groups.findById(id).orElseThrow(() -> new IllegalArgumentException("Group not found"));
+        return groupRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Group not found"));
     }
 
     @Transactional(readOnly = true)
-    public List<Group> list() {
-        return groups.findAll();
+    public List<Group> list(String name) {
+        Long userId = userRepository.findByName(name).orElseThrow().getId();
+        return membershipRepository.findGroupByUserId(userId);
     }
 
     public Group rename(Long id, String newName) {
@@ -48,20 +53,7 @@ public class GroupService {
     }
 
     public void delete(Long id) {
-        groups.deleteById(id);
-    }
-
-    public void addUser(Long groupId, Long userId) {
-        Group g = get(groupId);
-        User u = users.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
-        if (!g.getUsersList().contains(u)) {
-            g.getUsersList().add(u);
-        }
-    }
-
-    public void removeUser(Long groupId, Long userId) {
-        Group g = get(groupId);
-        g.getUsersList().removeIf(u -> u.getId().equals(userId));
+        groupRepository.deleteById(id);
     }
 
 
