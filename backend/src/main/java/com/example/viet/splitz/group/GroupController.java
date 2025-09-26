@@ -1,5 +1,6 @@
 package com.example.viet.splitz.group;
 
+import com.example.viet.splitz.group.dtos.GroupIdResDto;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,10 +16,10 @@ import java.util.List;
 @RequestMapping("/groups")
 public class GroupController {
 
-    private final GroupService service;
+    private final GroupService groupService;
 
     public GroupController(GroupService service) {
-        this.service = service;
+        this.groupService = service;
     }
 
     // DTOs
@@ -29,36 +30,23 @@ public class GroupController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Group create(@RequestBody CreateGroupReq req, Authentication authentication) {
-        return service.create(req.name(), authentication);
+        return groupService.create(req.name(), authentication);
     }
 
     @GetMapping("/{id}")
-    public Group get(@PathVariable Long id) {
-        return service.get(id);
+    public GroupIdResDto get(@PathVariable Long id) {
+        return groupService.get(id);
     }
 
     @GetMapping
     public List<Group> list(Authentication authentication) {
-        return service.list(authentication.getName());
-    }
-
-    @PutMapping("/{id}")
-    public Group rename(@PathVariable Long id, @RequestBody RenameGroupReq req) {
-        return service.rename(id, req.name());
+        return groupService.list(authentication.getName());
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
-        service.delete(id);
-    }
-
-    @PostMapping("/{id}/expenses")
-    public ResponseEntity<Expense> addExpense(@PathVariable Long id, @RequestBody ExpenseReq req) {
-        Expense e = new Expense();
-        e.setDescription(req.description());
-        e.setAmount(req.amount());
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.addExpense(id, e));
+        groupService.delete(id);
     }
 }
 

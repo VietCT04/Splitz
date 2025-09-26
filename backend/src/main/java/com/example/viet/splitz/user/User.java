@@ -1,7 +1,11 @@
 package com.example.viet.splitz.user;
 
 
+import com.example.viet.splitz.expense.Expense;
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -14,7 +18,20 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Expense> expenseList = new ArrayList<>();
+
     public User() {
+    }
+
+    public void addExpense(Expense e) {
+        expenseList.add(e);
+        e.setUser(this);
+    }
+
+    public void removeExpense(Expense e) {
+        expenseList.remove(e);
+        e.setUser(null);
     }
 
     public User(Long id, String name, String password) {

@@ -1,11 +1,13 @@
 package com.example.viet.splitz.expense;
 
 import com.example.viet.splitz.group.Group;
+import com.example.viet.splitz.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import org.antlr.v4.runtime.misc.NotNull;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import org.hibernate.annotations.Fetch;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -26,23 +28,43 @@ public class Expense {
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal amount;
 
-    @NotBlank
-    @Column(nullable = false)
-    private String paidBy;
-
     @NotNull
     @Column(nullable = false)
     private LocalDate date;
 
-    public Expense() {
-    }
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    public Expense(Long id, String description, BigDecimal amount, String paidBy, LocalDate date) {
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "group_id", nullable = false)
+    private Group group;
+
+    public Expense() {}
+
+    public Expense(Long id, String description, BigDecimal amount, User user, LocalDate date, Group group) {
         this.id = id;
         this.description = description;
         this.amount = amount;
-        this.paidBy = paidBy;
+        this.user = user;
         this.date = date;
+        this.group = group;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Long getId() {
@@ -67,14 +89,6 @@ public class Expense {
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
-    }
-
-    public String getPaidBy() {
-        return paidBy;
-    }
-
-    public void setPaidBy(String paidBy) {
-        this.paidBy = paidBy;
     }
 
     public LocalDate getDate() {

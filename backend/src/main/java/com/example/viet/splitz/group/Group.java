@@ -17,7 +17,7 @@ public class Group {
     private String name;
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Expense> expensesList = new java.util.ArrayList<>();
+    private List<Expense> expensesList;
 
     public Long getId() {
         return id;
