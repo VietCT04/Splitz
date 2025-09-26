@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 
 import java.util.List;
 
-// Group.java
 @Entity
 @Table(name = "groups")
 public class Group {

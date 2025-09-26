@@ -34,22 +34,15 @@ public class Expense {
     @Column(nullable = false)
     private LocalDate date;
 
-    // Owning side: each expense belongs to exactly one group
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_id", nullable = false)
-    @JsonIgnore                               // avoid JSON recursion
-    private Group group;
-
     public Expense() {
     }
 
-    public Expense(Long id, String description, BigDecimal amount, String paidBy, LocalDate date, Group group) {
+    public Expense(Long id, String description, BigDecimal amount, String paidBy, LocalDate date) {
         this.id = id;
         this.description = description;
         this.amount = amount;
         this.paidBy = paidBy;
         this.date = date;
-        this.group = group;
     }
 
     public Long getId() {
@@ -82,14 +75,6 @@ public class Expense {
 
     public void setPaidBy(String paidBy) {
         this.paidBy = paidBy;
-    }
-
-    public Group getGroup() {
-        return group;
-    }
-
-    public void setGroup(Group group) {
-        this.group = group;
     }
 
     public LocalDate getDate() {
