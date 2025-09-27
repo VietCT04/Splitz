@@ -8,9 +8,9 @@ import { Plus, Users, Wallet } from "lucide-react";
 type Group = {
   id: string;
   name: string;
-  updated: string; // human text like "23m ago"
+  updated: string; 
   members: number;
-  yourShare: number; // + you’re owed, - you owe
+  yourShare: number;
   settled?: boolean;
 };
 

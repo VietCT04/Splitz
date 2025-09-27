@@ -5,12 +5,12 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Plus, Wallet, Users, MoreHorizontal } from "lucide-react";
 
 /** ---------- types ---------- **/
-type Member = { id: string; name: string };
+type Member = { id: number; name: string };
 type Expense = {
   id: number;
   description: string;
   amount: number;
-  paidBy: string;
+  paidBy: number;
   date: string;
 };
 type Group = {
@@ -26,31 +26,31 @@ const mockGroup = (id: number): Group => ({
   id,
   name: "Trip to Bali",
   members: [
-    { id: "emma", name: "Emma" },
-    { id: "liam", name: "Liam" },
-    { id: "olivia", name: "Olivia" },
-    { id: "william", name: "William" },
+    { id: 1, name: "Emma" },
+    { id: 2, name: "Liam" },
+    { id: 3, name: "Olivia" },
+    { id: 4, name: "William" },
   ],
   expenses: [
     {
       id: 1,
       description: "Airport taxi",
       amount: 42.5,
-      paidBy: "emma",
+      paidBy: 1,
       date: "2025-09-20",
     },
     {
       id: 2,
       description: "Villa deposit",
       amount: 300,
-      paidBy: "liam",
+      paidBy: 2,
       date: "2025-09-18",
     },
     {
       id: 3,
       description: "Dinner",
       amount: 85.2,
-      paidBy: "olivia",
+      paidBy: 3,
       date: "2025-09-17",
     },
   ],
@@ -62,18 +62,20 @@ export default function GroupDetail({ params }: { params: { id: number } }) {
   const [group, setGroup] = useState<Group>(mockGroup(groupId));
   const [isDemo, setIsDemo] = useState(true);
   const [openAdd, setOpenAdd] = useState(false);
-  const token = localStorage.getItem("token");
 
   // If you have a JWT, fetch real group data here.
   useEffect(() => {
+    const token = localStorage.getItem("access_token");
     if (!token) return;
 
     (async () => {
       try {
+        console.log("fetching real data...");
         const res = await fetch(`http://localhost:8080/groups/${groupId}`, {
           headers: { Authorization: `Bearer ${token}` },
           credentials: "omit",
         });
+        console.log(res);
         if (!res.ok) throw new Error("bad");
         console.log(res);
         const real: Group = await res.json();
@@ -104,13 +106,32 @@ export default function GroupDetail({ params }: { params: { id: number } }) {
     groupId: number;
   }) {
     try {
+      const token = localStorage.getItem("access_token");
       const res = await fetch(`http://localhost:8080/expenses`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         credentials: "omit",
         body: JSON.stringify(payload),
       });
       if (!res.ok) throw new Error("bad");
+      const id: number = await res.json();
+      setGroup((g) => ({
+        ...g,
+        expenses: [
+          ...g.expenses,
+          {
+            id: id,
+            description: payload.description,
+            amount: payload.amount,
+            paidBy: Number(payload.paidBy),
+            date: payload.date,
+          },
+        ],
+      }));
+      setOpenAdd(false);
     } catch {}
   }
 
