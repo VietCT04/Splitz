@@ -4,11 +4,12 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import Sidebar from "../components/dashboard/Sidebar";
 import { Plus, Users, Wallet } from "lucide-react";
+import { getErrorMessage } from "../components/getErrorMessage";
 
 type Group = {
   id: string;
   name: string;
-  updated: string; 
+  updated: string;
   members: number;
   yourShare: number;
   settled?: boolean;
@@ -46,7 +47,6 @@ export default function GroupsPage() {
   const [tab, setTab] = useState<"all" | "owe" | "owed" | "settled">("all");
   const [openCreate, setOpenCreate] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   async function loadGroups(token: string) {
     const res = await fetch(`${API}/groups`, {
@@ -78,15 +78,6 @@ export default function GroupsPage() {
         return byName;
     }
   }, [groups, query, tab]);
-
-  const addGroup = (name: string) => {
-    const id = name.toLowerCase().replace(/\s+/g, "-");
-    setGroups((prev) => [
-      { id, name, updated: "just now", members: 1, yourShare: 0 },
-      ...prev,
-    ]);
-    setOpenCreate(false);
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -208,20 +199,17 @@ export default function GroupsPage() {
                   className="mt-4 space-y-3"
                   onSubmit={async (e) => {
                     e.preventDefault();
-                    setError(null);
                     const name =
                       new FormData(e.currentTarget)
                         .get("name")
                         ?.toString()
                         .trim() || "";
                     if (!name) {
-                      setError("Group name required");
                       return;
                     }
 
                     const token = localStorage.getItem("access_token");
                     if (!token) {
-                      setError("Please log in");
                       return;
                     }
 
@@ -240,8 +228,9 @@ export default function GroupsPage() {
 
                       await loadGroups(token); // <— refresh list
                       setOpenCreate(false); // close modal
-                    } catch (err: any) {
-                      setError(err.message ?? "Something went wrong");
+                    } catch (e) {
+                      const msg = getErrorMessage(e);
+                      alert(msg);
                     } finally {
                       setSubmitting(false);
                     }

@@ -24,6 +24,15 @@ const mockUser: User = {
   notifications: { email: true, push: false },
 };
 
+const getErrorMessage = (e: unknown): string => {
+  if (e instanceof Error) return e.message;
+  if (typeof e === "string") return e;
+  try {
+    return JSON.stringify(e);
+  } catch {
+    return String(e);
+  }
+};
 export default function SettingsPage() {
   const router = useRouter();
   const [user, setUser] = useState<User>(mockUser);
@@ -83,8 +92,9 @@ export default function SettingsPage() {
       });
       if (!res.ok) throw new Error("Could not save profile");
       toast("Profile saved");
-    } catch (e: any) {
-      toast(undefined, e.message);
+    } catch (e) {
+      const msg = getErrorMessage(e);
+      toast(undefined, msg);
     } finally {
       setSavingProfile(false);
     }
@@ -109,8 +119,9 @@ export default function SettingsPage() {
       });
       if (!res.ok) throw new Error("Could not save settings");
       toast("Settings saved");
-    } catch (e: any) {
-      toast(undefined, e.message);
+    } catch (e) {
+      const msg = getErrorMessage(e);
+      toast(undefined, msg);
     } finally {
       setSavingPrefs(false);
     }
@@ -136,8 +147,9 @@ export default function SettingsPage() {
       if (!res.ok) throw new Error("Password change failed");
       setPwd({ current: "", next: "" });
       toast("Password updated");
-    } catch (e: any) {
-      toast(undefined, e.message);
+    } catch (e) {
+      const msg = getErrorMessage(e);
+      toast(undefined, msg);
     } finally {
       setChangingPwd(false);
     }
@@ -162,8 +174,9 @@ export default function SettingsPage() {
       });
       if (!res.ok) throw new Error("Delete failed");
       signOut();
-    } catch (e: any) {
-      toast(undefined, e.message);
+    } catch (e) {
+      const msg = getErrorMessage(e);
+      toast(undefined, msg);
     }
   }
 
