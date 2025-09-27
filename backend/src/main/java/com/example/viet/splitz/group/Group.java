@@ -2,6 +2,7 @@ package com.example.viet.splitz.group;
 
 import com.example.viet.splitz.expense.Expense;
 import com.example.viet.splitz.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -17,6 +18,7 @@ public class Group {
     private String name;
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Expense> expensesList;
 
     public Long getId() {
