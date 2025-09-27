@@ -49,7 +49,7 @@ export default function GroupsPage() {
   const [submitting, setSubmitting] = useState(false);
 
   async function loadGroups(token: string) {
-    const res = await fetch(`${API}/groups`, {
+    const res = await fetch(process.env.NEXT_PUBLIC_API_BASE_URL + "/groups", {
       headers: { Authorization: `Bearer ${token}` },
       credentials: "omit",
     });
@@ -215,7 +215,7 @@ export default function GroupsPage() {
 
                     try {
                       setSubmitting(true);
-                      const res = await fetch(`${API}/groups`, {
+                      const res = await fetch(process.env.NEXT_PUBLIC_API_BASE_URL + "/groups", {
                         method: "POST",
                         headers: {
                           "Content-Type": "application/json",

@@ -63,7 +63,6 @@ export default function GroupDetail({ params }: { params: { id: number } }) {
   const [isDemo, setIsDemo] = useState(true);
   const [openAdd, setOpenAdd] = useState(false);
 
-  // If you have a JWT, fetch real group data here.
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (!token) return;
@@ -71,10 +70,13 @@ export default function GroupDetail({ params }: { params: { id: number } }) {
     (async () => {
       try {
         console.log("fetching real data...");
-        const res = await fetch(`http://localhost:8080/groups/${groupId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-          credentials: "omit",
-        });
+        const res = await fetch(
+          process.env.NEXT_PUBLIC_API_BASE_URL + `/groups/${groupId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            credentials: "omit",
+          }
+        );
         console.log(res);
         if (!res.ok) throw new Error("bad");
         console.log(res);
@@ -107,15 +109,18 @@ export default function GroupDetail({ params }: { params: { id: number } }) {
   }) {
     try {
       const token = localStorage.getItem("access_token");
-      const res = await fetch(`http://localhost:8080/expenses`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        credentials: "omit",
-        body: JSON.stringify(payload),
-      });
+      const res = await fetch(
+        process.env.NEXT_PUBLIC_API_BASE_URL + `/expenses`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          credentials: "omit",
+          body: JSON.stringify(payload),
+        }
+      );
       if (!res.ok) throw new Error("bad");
       const id: number = await res.json();
       setGroup((g) => ({

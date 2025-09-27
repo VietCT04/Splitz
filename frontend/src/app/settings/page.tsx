@@ -54,7 +54,7 @@ export default function SettingsPage() {
     (async () => {
       try {
         setLoading(true);
-        const res = await fetch(`${API}/me`, {
+        const res = await fetch(process.env.NEXT_PUBLIC_API_BASE_URL + `/me`, {
           headers: { Authorization: `Bearer ${token}` },
           credentials: "omit",
         });
@@ -82,7 +82,7 @@ export default function SettingsPage() {
     if (!token) return toast(undefined, "Please log in");
     try {
       setSavingProfile(true);
-      const res = await fetch(`${API}/me`, {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_BASE_URL + `/me`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -105,18 +105,21 @@ export default function SettingsPage() {
     if (!token) return toast(undefined, "Please log in");
     try {
       setSavingPrefs(true);
-      const res = await fetch(`${API}/settings`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          currency: user.currency,
-          theme: user.theme,
-          notifications: user.notifications,
-        }),
-      });
+      const res = await fetch(
+        process.env.NEXT_PUBLIC_API_BASE_URL + `/settings`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            currency: user.currency,
+            theme: user.theme,
+            notifications: user.notifications,
+          }),
+        }
+      );
       if (!res.ok) throw new Error("Could not save settings");
       toast("Settings saved");
     } catch (e) {
@@ -133,17 +136,20 @@ export default function SettingsPage() {
     if (!pwd.current || !pwd.next) return toast(undefined, "Fill both fields");
     try {
       setChangingPwd(true);
-      const res = await fetch(`${API}/auth/change-password`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          currentPassword: pwd.current,
-          newPassword: pwd.next,
-        }),
-      });
+      const res = await fetch(
+        process.env.NEXT_PUBLIC_API_BASE_URL + `/auth/change-password`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            currentPassword: pwd.current,
+            newPassword: pwd.next,
+          }),
+        }
+      );
       if (!res.ok) throw new Error("Password change failed");
       setPwd({ current: "", next: "" });
       toast("Password updated");
@@ -168,7 +174,7 @@ export default function SettingsPage() {
     const token = localStorage.getItem("access_token");
     if (!token) return toast(undefined, "Please log in");
     try {
-      const res = await fetch(`${API}/me`, {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_BASE_URL + `/me`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

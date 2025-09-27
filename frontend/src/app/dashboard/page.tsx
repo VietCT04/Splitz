@@ -98,7 +98,7 @@ export default function DashboardPage() {
 
     (async () => {
       try {
-        const res = await fetch("http://localhost:8080/api/dashboard", {
+        const res = await fetch(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/dashboard", {
           headers: { Authorization: `Bearer ${token}` },
           // no cookies, so:
           credentials: "omit",
