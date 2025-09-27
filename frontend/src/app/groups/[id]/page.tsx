@@ -7,14 +7,14 @@ import { ArrowLeft, Plus, Wallet, Users, MoreHorizontal } from "lucide-react";
 /** ---------- types ---------- **/
 type Member = { id: string; name: string };
 type Expense = {
-  id: string;
+  id: number;
   description: string;
-  amount: number; // total amount
-  paidBy: string; // member id
-  date: string; // ISO or display
+  amount: number;
+  paidBy: string;
+  date: string;
 };
 type Group = {
-  id: string;
+  id: number;
   name: string;
   members: Member[];
   expenses: Expense[];
@@ -22,7 +22,7 @@ type Group = {
 /** ---------------------------- **/
 
 /** Demo data (used if no JWT in localStorage) */
-const mockGroup = (id: string): Group => ({
+const mockGroup = (id: number): Group => ({
   id,
   name: "Trip to Bali",
   members: [
@@ -33,21 +33,21 @@ const mockGroup = (id: string): Group => ({
   ],
   expenses: [
     {
-      id: "e1",
+      id: 1,
       description: "Airport taxi",
       amount: 42.5,
       paidBy: "emma",
       date: "2025-09-20",
     },
     {
-      id: "e2",
+      id: 2,
       description: "Villa deposit",
       amount: 300,
       paidBy: "liam",
       date: "2025-09-18",
     },
     {
-      id: "e3",
+      id: 3,
       description: "Dinner",
       amount: 85.2,
       paidBy: "olivia",
@@ -56,35 +56,35 @@ const mockGroup = (id: string): Group => ({
   ],
 });
 
-export default function GroupDetail({ params }: { params: { id: string } }) {
+export default function GroupDetail({ params }: { params: { id: number } }) {
   const groupId = params.id;
 
   const [group, setGroup] = useState<Group>(mockGroup(groupId));
   const [isDemo, setIsDemo] = useState(true);
   const [openAdd, setOpenAdd] = useState(false);
+  const token = localStorage.getItem("token");
 
   // If you have a JWT, fetch real group data here.
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
     if (!token) return;
 
     (async () => {
       try {
-        const res = await fetch(`http://localhost:8080/api/groups/${groupId}`, {
+        const res = await fetch(`http://localhost:8080/groups/${groupId}`, {
           headers: { Authorization: `Bearer ${token}` },
           credentials: "omit",
         });
         if (!res.ok) throw new Error("bad");
+        console.log(res);
         const real: Group = await res.json();
         setGroup(real);
         setIsDemo(false);
       } catch {
-        setIsDemo(true); // keep demo
+        setIsDemo(true);
       }
     })();
   }, [groupId]);
 
-  /** Split equally just for demo math */
   const perHead = useMemo(() => {
     if (!group.members.length || !group.expenses.length) return 0;
     const total = group.expenses.reduce((s, e) => s + e.amount, 0);
@@ -96,18 +96,22 @@ export default function GroupDetail({ params }: { params: { id: string } }) {
     [group]
   );
 
-  function handleAddExpense(payload: {
+  async function handleAddExpense(payload: {
     description: string;
     amount: number;
     paidBy: string;
     date: string;
+    groupId: number;
   }) {
-    const id = Math.random().toString(36).slice(2);
-    setGroup((g) => ({
-      ...g,
-      expenses: [{ id, ...payload }, ...g.expenses],
-    }));
-    setOpenAdd(false);
+    try {
+      const res = await fetch(`http://localhost:8080/expenses`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        credentials: "omit",
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error("bad");
+    } catch {}
   }
 
   return (
@@ -275,7 +279,7 @@ export default function GroupDetail({ params }: { params: { id: string } }) {
         <AddExpenseModal
           members={group.members}
           onClose={() => setOpenAdd(false)}
-          onCreate={(payload) => handleAddExpense(payload)}
+          onCreate={(payload) => handleAddExpense({ ...payload, groupId })}
         />
       )}
     </div>
