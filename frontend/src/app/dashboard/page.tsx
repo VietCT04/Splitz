@@ -131,12 +131,12 @@ export default function DashboardPage() {
           )}
 
           {/* top bar */}
-          <div className="flex items-center justify-between">
-            <input
+          <div className="flex items-center justify-end">
+            {/* <input
               type="search"
               placeholder="Search"
               className="w-full max-w-md rounded-xl border border-gray-900 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-500"
-            />
+            /> */}
             <div className="ml-4 flex items-center gap-2">
               <button className="inline-flex items-center gap-2 rounded-xl bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-black">
                 <Plus className="h-4 w-4" /> Add Expense
