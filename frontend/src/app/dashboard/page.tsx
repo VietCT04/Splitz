@@ -1,5 +1,6 @@
 "use client";
 
+import Avatar from "../components/ui/Avatar";
 import { useEffect, useState } from "react";
 import Sidebar from "../components/dashboard/Sidebar";
 import StatCard from "../components/dashboard/StatCard";
@@ -98,11 +99,14 @@ export default function DashboardPage() {
 
     (async () => {
       try {
-        const res = await fetch(process.env.NEXT_PUBLIC_API_BASE_URL + "/api/dashboard", {
-          headers: { Authorization: `Bearer ${token}` },
-          // no cookies, so:
-          credentials: "omit",
-        });
+        const res = await fetch(
+          process.env.NEXT_PUBLIC_API_BASE_URL + "/api/dashboard",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            // no cookies, so:
+            credentials: "omit",
+          }
+        );
         if (!res.ok) throw new Error("unauthorized");
         const real: Dash = await res.json();
         setData(real);
@@ -191,7 +195,7 @@ export default function DashboardPage() {
                         className="flex items-center justify-between py-3"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="h-8 w-8 rounded-full bg-gray-200" />
+                          <Avatar size={32} rounded="lg" />
                           <div className="text-sm">
                             <p className="font-medium text-gray-900">
                               {a.name} {a.action}
@@ -229,7 +233,7 @@ export default function DashboardPage() {
                     data.friends.map((f, i) => (
                       <li key={i} className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="h-8 w-8 rounded-full bg-gray-200" />
+                          <Avatar size={32} rounded="lg" />
                           <div className="text-sm">
                             <p className="font-medium text-gray-900">
                               {f.name}
@@ -269,7 +273,11 @@ export default function DashboardPage() {
                     data.groups.map((g, i) => (
                       <li key={i} className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="h-8 w-8 rounded-md bg-gray-200" />
+                          <Avatar
+                            size={32}
+                            rounded="lg"
+                            src="/groupavatar.png"
+                          />
                           <div className="text-sm">
                             <p className="font-medium text-gray-900">
                               {g.name}
@@ -290,8 +298,8 @@ export default function DashboardPage() {
                 </ul>
               </div>
 
-              <SpendingByCategoryChart data={data.spending} />
-              <MonthlyNetChart data={data.monthly} />
+              {/* <SpendingByCategoryChart data={data.spending} />
+              <MonthlyNetChart data={data.monthly} /> */}
             </aside>
           </div>
         </main>
