@@ -1,13 +1,8 @@
-# build stage
-FROM gradle:8.9-jdk21 AS build
-WORKDIR /app
+FROM maven:3.8.5-openjdk-17 AS build
 COPY . .
-RUN gradle bootJar --no-daemon
+RUN mvn clean package -DskipTests
 
-# run stage
-FROM eclipse-temurin:21-jre
-WORKDIR /app
-COPY --from=build /app/build/libs/*.jar app.jar
-ENV PORT=8080
+FROM openjdk:17.0.1-jdk-slim
+COPY --from=build /target/demo-0.0.1-SNAPSHOT.jar demo.jar
 EXPOSE 8080
-CMD ["java","-jar","/app/app.jar"]
+ENTRYPOINT ["java", "-jar", "demo.jar"]
