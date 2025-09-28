@@ -9,13 +9,13 @@ import { Plus, Wallet } from "lucide-react";
 type ActivityItem = {
   id: string;
   type: "expense" | "settlement";
-  entityType: "friend" | "group"; // where this belongs
-  entityId: string; // id to link to detail page
-  entityName: string; // e.g. "Trip to Bali" or "Jacob"
-  who: string; // who acted (e.g., "Emma")
-  description: string; // e.g., "Dinner", "Settled up"
-  amount: number; // + they owe you, - you owe them
-  date: string; // ISO date
+  entityType: "friend" | "group";
+  entityId: string;
+  entityName: string;
+  who: string;
+  description: string;
+  amount: number;
+  date: string;
 };
 
 const API = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
@@ -41,7 +41,7 @@ const mockActivity: ActivityItem[] = [
     entityName: "Trip to Bali",
     who: "Liam",
     description: "Villa deposit",
-    amount: -75, // you owe your share
+    amount: -75,
     date: "2025-09-19",
   },
   {
@@ -163,6 +163,14 @@ export default function ActivityPage() {
               >
                 <Plus className="h-4 w-4" /> Add Expense
               </Link>
+              {isDemo && (
+                <Link
+                  href={"/"}
+                  className="inline-flex items-center gap-2 rounded-xl border border-gray-900 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50"
+                >
+                  Log in
+                </Link>
+              )}
             </div>
           </div>
 

@@ -1,5 +1,5 @@
 "use client";
-
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Sidebar from "../components/dashboard/Sidebar";
@@ -217,13 +217,25 @@ export default function SettingsPage() {
           {/* header */}
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-semibold text-gray-900">Settings</h1>
-            <button
-              onClick={signOut}
-              className="inline-flex items-center gap-2 rounded-xl border border-gray-900 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50"
-            >
-              <LogOut className="h-4 w-4" />
-              Sign out
-            </button>
+            <div className="flex items-center gap-3 justify-end">
+              {!isDemo && (
+                <button
+                  onClick={signOut}
+                  className="inline-flex items-center gap-2 rounded-xl border border-gray-900 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Sign out
+                </button>
+              )}
+              {isDemo && (
+                <Link
+                  href={"/"}
+                  className="inline-flex items-center gap-2 rounded-xl border border-gray-900 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50"
+                >
+                  Log in
+                </Link>
+              )}
+            </div>
           </div>
 
           {/* content */}

@@ -110,6 +110,14 @@ export default function GroupsPage() {
               >
                 <Plus className="h-4 w-4" /> Create Group
               </button>
+              {isDemo && (
+                <Link
+                  href={"/"}
+                  className="inline-flex items-center gap-2 rounded-xl border border-gray-900 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50"
+                >
+                  Log in
+                </Link>
+              )}
             </div>
           </div>
 
@@ -215,15 +223,18 @@ export default function GroupsPage() {
 
                     try {
                       setSubmitting(true);
-                      const res = await fetch(process.env.NEXT_PUBLIC_API_BASE_URL + "/groups", {
-                        method: "POST",
-                        headers: {
-                          "Content-Type": "application/json",
-                          Authorization: `Bearer ${token}`,
-                        },
-                        body: JSON.stringify({ name }),
-                        credentials: "omit",
-                      });
+                      const res = await fetch(
+                        process.env.NEXT_PUBLIC_API_BASE_URL + "/groups",
+                        {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`,
+                          },
+                          body: JSON.stringify({ name }),
+                          credentials: "omit",
+                        }
+                      );
                       if (!res.ok) throw new Error("Create failed");
 
                       await loadGroups(token); // <— refresh list
