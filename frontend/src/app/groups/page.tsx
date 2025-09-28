@@ -1,5 +1,4 @@
 "use client";
-const API = "http://localhost:8080";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import Sidebar from "../components/dashboard/Sidebar";
@@ -9,34 +8,28 @@ import { getErrorMessage } from "../components/getErrorMessage";
 type Group = {
   id: string;
   name: string;
-  updated: string;
   members: number;
   yourShare: number;
-  settled?: boolean;
 };
 
 const mockGroups: Group[] = [
   {
     id: "bali",
     name: "Trip to Bali",
-    updated: "23m ago",
     members: 6,
     yourShare: 42.8,
   },
   {
     id: "apt12b",
     name: "Apartment 12B",
-    updated: "2h ago",
     members: 3,
     yourShare: -15,
   },
   {
     id: "brunch",
     name: "Brunch Buddies",
-    updated: "3w ago",
     members: 4,
     yourShare: 0,
-    settled: true,
   },
 ];
 
@@ -69,11 +62,11 @@ export default function GroupsPage() {
     );
     switch (tab) {
       case "owe":
-        return byName.filter((g) => g.yourShare < 0 && !g.settled);
+        return byName.filter((g) => g.yourShare < 0);
       case "owed":
-        return byName.filter((g) => g.yourShare > 0 && !g.settled);
+        return byName.filter((g) => g.yourShare > 0);
       case "settled":
-        return byName.filter((g) => g.settled || g.yourShare === 0);
+        return byName.filter((g) => g.yourShare === 0);
       default:
         return byName;
     }
@@ -159,10 +152,7 @@ export default function GroupsPage() {
                       </div>
                       <div className="text-sm">
                         <p className="font-medium text-gray-900">{g.name}</p>
-                        <p className="text-gray-600">
-                          {g.members} members · {g.updated}
-                          {g.settled ? " · Settled" : null}
-                        </p>
+                        <p className="text-gray-600">{g.members} members</p>
                       </div>
                     </div>
 

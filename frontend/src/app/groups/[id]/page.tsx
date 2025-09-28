@@ -23,7 +23,7 @@ type Group = {
   name: string;
   members: Member[];
   expenses: Expense[];
-  memberBalances: MemberBalance[];
+  balances: MemberBalance[];
 };
 /** --------------------------- **/
 
@@ -61,7 +61,7 @@ const mockGroup = (id: number): Group => ({
     },
   ],
   // sums to 0 to represent a balanced group
-  memberBalances: [
+  balances: [
     { memberId: 1, name: "Emma", net: 62.7 },
     { memberId: 2, name: "Liam", net: -30.0 },
     { memberId: 3, name: "Olivia", net: -12.5 },
@@ -69,8 +69,8 @@ const mockGroup = (id: number): Group => ({
   ],
 });
 
-export default function GroupDetail({ params }: { params: { id: string } }) {
-  const groupId = Number(params.id);
+export default function GroupDetail({ params }: { params: { id: number } }) {
+  const groupId = params.id;
 
   const [group, setGroup] = useState<Group>(mockGroup(groupId));
   const [isDemo, setIsDemo] = useState(true);
@@ -92,6 +92,7 @@ export default function GroupDetail({ params }: { params: { id: string } }) {
         );
         if (!res.ok) throw new Error("bad");
         const real: Group = await res.json();
+        console.log(real);
         setGroup(real);
         setIsDemo(false);
       } catch {
@@ -167,7 +168,7 @@ export default function GroupDetail({ params }: { params: { id: string } }) {
         ...g,
         members: [...g.members, { id: nextId, name: payload.name }],
         memberBalances: [
-          ...g.memberBalances,
+          ...g.balances,
           { memberId: nextId, name: payload.name, net: 0 },
         ],
       }));
@@ -324,7 +325,7 @@ export default function GroupDetail({ params }: { params: { id: string } }) {
             </ul>
 
             {/* Server-computed member balances */}
-            <MemberBalanceList balances={group.memberBalances} />
+            <MemberBalanceList balances={group.balances} />
           </section>
 
           {/* SIDE CARD: Group actions */}
@@ -389,6 +390,7 @@ export default function GroupDetail({ params }: { params: { id: string } }) {
 
 /** ---------------- Member Balances (server data) ---------------- */
 function MemberBalanceList({ balances }: { balances: MemberBalance[] }) {
+  console.log(balances);
   if (!balances?.length) {
     return (
       <div className="rounded-xl border bg-white p-4 shadow-sm">
