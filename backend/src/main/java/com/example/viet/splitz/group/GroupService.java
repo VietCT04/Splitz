@@ -8,6 +8,7 @@ import com.example.viet.splitz.user.User;
 import com.example.viet.splitz.user.UserRepository;
 import com.example.viet.splitz.expense.Expense;
 import com.example.viet.splitz.expense.ExpenseRepository;
+import com.example.viet.splitz.user.dtos.UserBalanceDto;
 import com.example.viet.splitz.user.dtos.UserResDto;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -73,7 +74,8 @@ public class GroupService {
             );
             expenseResDtoList.add(expenseResDto);
         }
-        return new GroupIdResDto(id, groupName, userResDtoList, expenseResDtoList);
+        List<UserBalanceDto> userBalanceDtoList = userRepository.findUsersBalanceByGroupId(id);
+        return new GroupIdResDto(id, groupName, userResDtoList, expenseResDtoList, userBalanceDtoList);
     }
 
     @Transactional(readOnly = true)
