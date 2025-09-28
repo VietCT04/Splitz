@@ -13,7 +13,11 @@ import com.example.viet.splitz.user.dtos.UserResDto;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.swing.text.html.Option;
+import java.lang.reflect.Member;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +53,20 @@ public class GroupService {
         membershipRepository.save(membership);
         return g;
     }
+    public Boolean addMember(@PathVariable Long groupId, @RequestBody String userName){
+        Optional<User> user = userRepository.findByName(userName);
+        Optional<Group> group = groupRepository.findById(groupId);
+        if (user.isPresent() && group.isPresent()){
+            Membership membership = new Membership();
+            membership.setGroup(group.get());
+            membership.setUser(user.get());
+            membership.setJoinedAt(Instant.now());
+            membershipRepository.save(membership);
+            return true;
+        }
+        return false;
+    }
+
 
     @Transactional(readOnly = true)
     public GroupIdResDto get(Long id) {

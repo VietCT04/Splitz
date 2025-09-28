@@ -1,6 +1,7 @@
 package com.example.viet.splitz.group;
 
 import com.example.viet.splitz.group.dtos.GroupIdResDto;
+import org.apache.coyote.Response;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +27,8 @@ public class GroupController {
     public record CreateGroupReq(String name) {}
     public record RenameGroupReq(String name) {}
     public record ExpenseReq(String description, BigDecimal amount) {}
+    public record AddMemberReq(String name) {}
+
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -41,6 +44,13 @@ public class GroupController {
     @GetMapping
     public List<Group> list(Authentication authentication) {
         return groupService.list(authentication.getName());
+    }
+
+    @PostMapping("/{groupId}/members")
+    public ResponseEntity<Void> addMember(@PathVariable Long groupId, @RequestBody AddMemberReq userName){
+        Boolean success = groupService.addMember(groupId, userName.name());
+        if (!success) return ResponseEntity.notFound().build();
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
