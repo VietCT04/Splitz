@@ -14,7 +14,7 @@ type Expense = {
   date: string;
 };
 type MemberBalance = {
-  memberId: number; // matches Member.id
+  userId: number; // matches Member.id
   name: string; // display name
   net: number; // + they’re owed by the group, - they owe the group
 };
@@ -62,10 +62,10 @@ const mockGroup = (id: number): Group => ({
   ],
   // sums to 0 to represent a balanced group
   balances: [
-    { memberId: 1, name: "Emma", net: 62.7 },
-    { memberId: 2, name: "Liam", net: -30.0 },
-    { memberId: 3, name: "Olivia", net: -12.5 },
-    { memberId: 4, name: "William", net: -20.2 },
+    { userId: 1, name: "Emma", net: 62.7 },
+    { userId: 2, name: "Liam", net: -30.0 },
+    { userId: 3, name: "Olivia", net: -12.5 },
+    { userId: 4, name: "William", net: -20.2 },
   ],
 });
 
@@ -92,7 +92,7 @@ export default function GroupDetail({ params }: { params: { id: number } }) {
         );
         if (!res.ok) throw new Error("bad");
         const real: Group = await res.json();
-        console.log(real);
+        real.expenses.reverse();
         setGroup(real);
         setIsDemo(false);
       } catch {
@@ -124,6 +124,7 @@ export default function GroupDetail({ params }: { params: { id: number } }) {
     );
     if (g.ok) {
       const data: Group = await g.json();
+      data.expenses.reverse();
       setGroup(data);
       setIsDemo(false);
     }
@@ -301,7 +302,7 @@ export default function GroupDetail({ params }: { params: { id: number } }) {
                           {e.description}
                         </p>
                         <p className="text-xs text-gray-600">
-                          {new Date(e.date).toLocaleDateString()} · paid by{" "}
+                          {e.date} · paid by{" "}
                           <span className="font-medium">{e.paidBy ?? "—"}</span>
                         </p>
                       </div>
@@ -405,7 +406,7 @@ function MemberBalanceList({ balances }: { balances: MemberBalance[] }) {
       <h3 className="text-sm font-medium text-gray-900">Member balances</h3>
       <ul className="mt-3 space-y-3">
         {balances.map((b) => (
-          <li key={b.memberId} className="flex items-center justify-between">
+          <li key={b.userId} className="flex items-center justify-between">
             <div className="text-sm">
               <p className="font-medium text-gray-900">{b.name}</p>
             </div>
