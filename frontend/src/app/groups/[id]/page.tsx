@@ -10,7 +10,7 @@ type Expense = {
   id: number;
   description: string;
   amount: number;
-  paidBy: number;
+  paidBy: string;
   date: string;
 };
 type Group = {
@@ -36,21 +36,21 @@ const mockGroup = (id: number): Group => ({
       id: 1,
       description: "Airport taxi",
       amount: 42.5,
-      paidBy: 1,
+      paidBy: "Quan",
       date: "2025-09-20",
     },
     {
       id: 2,
       description: "Villa deposit",
       amount: 300,
-      paidBy: 2,
+      paidBy: "Viet",
       date: "2025-09-18",
     },
     {
       id: 3,
       description: "Dinner",
       amount: 85.2,
-      paidBy: 3,
+      paidBy: "Emma",
       date: "2025-09-17",
     },
   ],
@@ -131,7 +131,7 @@ export default function GroupDetail({ params }: { params: { id: number } }) {
             id: id,
             description: payload.description,
             amount: payload.amount,
-            paidBy: Number(payload.paidBy),
+            paidBy: payload.paidBy,
             date: payload.date,
           },
         ],
@@ -245,10 +245,7 @@ export default function GroupDetail({ params }: { params: { id: number } }) {
                         </p>
                         <p className="text-xs text-gray-600">
                           {new Date(e.date).toLocaleDateString()} · paid by{" "}
-                          <span className="font-medium">
-                            {group.members.find((m) => m.id === e.paidBy)
-                              ?.name ?? "—"}
-                          </span>
+                          <span className="font-medium">{e.paidBy ?? "—"}</span>
                         </p>
                       </div>
                     </div>
