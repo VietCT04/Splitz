@@ -10,16 +10,22 @@ type Expense = {
   id: number;
   description: string;
   amount: number;
-  paidBy: string;
+  paidBy: string; // backend can use id; keep string here to match your form
   date: string;
+};
+type MemberBalance = {
+  memberId: number; // matches Member.id
+  name: string; // display name
+  net: number; // + they’re owed by the group, - they owe the group
 };
 type Group = {
   id: number;
   name: string;
   members: Member[];
   expenses: Expense[];
+  memberBalances: MemberBalance[];
 };
-/** ---------------------------- **/
+/** --------------------------- **/
 
 /** Demo data (used if no JWT in localStorage) */
 const mockGroup = (id: number): Group => ({
@@ -54,10 +60,17 @@ const mockGroup = (id: number): Group => ({
       date: "2025-09-17",
     },
   ],
+  // sums to 0 to represent a balanced group
+  memberBalances: [
+    { memberId: 1, name: "Emma", net: 62.7 },
+    { memberId: 2, name: "Liam", net: -30.0 },
+    { memberId: 3, name: "Olivia", net: -12.5 },
+    { memberId: 4, name: "William", net: -20.2 },
+  ],
 });
 
-export default function GroupDetail({ params }: { params: { id: number } }) {
-  const groupId = params.id;
+export default function GroupDetail({ params }: { params: { id: string } }) {
+  const groupId = Number(params.id);
 
   const [group, setGroup] = useState<Group>(mockGroup(groupId));
   const [isDemo, setIsDemo] = useState(true);
@@ -69,7 +82,6 @@ export default function GroupDetail({ params }: { params: { id: number } }) {
 
     (async () => {
       try {
-        console.log("fetching real data...");
         const res = await fetch(
           process.env.NEXT_PUBLIC_API_BASE_URL + `/groups/${groupId}`,
           {
@@ -77,10 +89,9 @@ export default function GroupDetail({ params }: { params: { id: number } }) {
             credentials: "omit",
           }
         );
-        console.log(res);
         if (!res.ok) throw new Error("bad");
-        console.log(res);
         const real: Group = await res.json();
+        console.log(real);
         setGroup(real);
         setIsDemo(false);
       } catch {
@@ -99,6 +110,23 @@ export default function GroupDetail({ params }: { params: { id: number } }) {
     () => group.expenses.reduce((s, e) => s + e.amount, 0),
     [group]
   );
+
+  async function refetchGroup() {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    const g = await fetch(
+      process.env.NEXT_PUBLIC_API_BASE_URL + `/groups/${groupId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        credentials: "omit",
+      }
+    );
+    if (g.ok) {
+      const data: Group = await g.json();
+      setGroup(data);
+      setIsDemo(false);
+    }
+  }
 
   async function handleAddExpense(payload: {
     description: string;
@@ -122,22 +150,12 @@ export default function GroupDetail({ params }: { params: { id: number } }) {
         }
       );
       if (!res.ok) throw new Error("bad");
-      const id: number = await res.json();
-      setGroup((g) => ({
-        ...g,
-        expenses: [
-          ...g.expenses,
-          {
-            id: id,
-            description: payload.description,
-            amount: payload.amount,
-            paidBy: payload.paidBy,
-            date: payload.date,
-          },
-        ],
-      }));
+      // ✅ Re-fetch group so memberBalances (server-computed) update correctly
+      await refetchGroup();
       setOpenAdd(false);
-    } catch {}
+    } catch {
+      // keep demo data if it fails
+    }
   }
 
   return (
@@ -251,7 +269,7 @@ export default function GroupDetail({ params }: { params: { id: number } }) {
                     </div>
 
                     <div className="flex items-center gap-3">
-                      <span className="rounded-full bg-gray-900 px-2 py-1 text-xs font-semibold">
+                      <span className="rounded-full bg-gray-900 px-2 py-1 text-xs font-semibold text-white">
                         ${e.amount.toFixed(2)}
                       </span>
                       <button className="rounded-xl border border-gray-900 px-3 py-1.5 text-sm text-gray-900 hover:bg-gray-50">
@@ -266,6 +284,9 @@ export default function GroupDetail({ params }: { params: { id: number } }) {
                 </li>
               )}
             </ul>
+
+            {/* NEW: Server-computed member balances */}
+            <MemberBalanceList balances={group.memberBalances} />
           </section>
 
           {/* SIDE CARD: Group actions */}
@@ -313,6 +334,45 @@ export default function GroupDetail({ params }: { params: { id: number } }) {
           onCreate={(payload) => handleAddExpense({ ...payload, groupId })}
         />
       )}
+    </div>
+  );
+}
+
+/** ---------------- Member Balances (server data) ---------------- */
+function MemberBalanceList({ balances }: { balances: MemberBalance[] }) {
+  if (!balances?.length) {
+    return (
+      <div className="rounded-xl border bg-white p-4 shadow-sm">
+        <h3 className="text-sm font-medium text-gray-900">Member balances</h3>
+        <p className="mt-3 text-sm text-gray-600">No balances yet</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-xl border bg-white p-4 shadow-sm">
+      <h3 className="text-sm font-medium text-gray-900">Member balances</h3>
+      <ul className="mt-3 space-y-3">
+        {balances.map((b) => (
+          <li key={b.memberId} className="flex items-center justify-between">
+            <div className="text-sm">
+              <p className="font-medium text-gray-900">{b.name}</p>
+            </div>
+            <span
+              className={`rounded-full px-2 py-1 text-xs font-semibold ${
+                b.net > 0
+                  ? "bg-emerald-100 text-emerald-700"
+                  : b.net < 0
+                  ? "bg-rose-100 text-rose-700"
+                  : "bg-gray-100 text-gray-700"
+              }`}
+            >
+              {b.net > 0 ? "+" : b.net < 0 ? "-" : ""}$
+              {Math.abs(b.net).toFixed(2)}
+            </span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
