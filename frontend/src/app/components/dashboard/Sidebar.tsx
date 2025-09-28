@@ -2,20 +2,20 @@ import Link from "next/link";
 import {
   LayoutDashboard,
   Users,
-  UserRound,
+  //UserRound,
   Activity,
   Wallet,
-  BarChart3,
+  //BarChart3,
   Settings,
 } from "lucide-react";
 
 const nav = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/groups", label: "Groups", icon: Users },
-  { href: "/friends", label: "Friends", icon: UserRound },
+  //{ href: "/friends", label: "Friends", icon: UserRound },
   { href: "/activity", label: "Activity", icon: Activity },
   { href: "/settle-up", label: "Settle Up", icon: Wallet },
-  { href: "/reports", label: "Reports", icon: BarChart3 },
+  //{ href: "/reports", label: "Reports", icon: BarChart3 },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 

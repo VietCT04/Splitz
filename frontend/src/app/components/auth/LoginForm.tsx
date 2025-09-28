@@ -78,6 +78,25 @@ export default function LoginForm(): React.JSX.Element {
       >
         Log In
       </button>
+      <button
+        type="button"
+        onClick={() => router.push("/dashboard")}
+        className="w-full rounded-xl bg-gray-900 px-3 py-2.5 text-sm font-semibold text-white hover:bg-black"
+      >
+        Sign Up
+      </button>
+
+      <button
+        type="button"
+        onClick={() =>
+          router.push(
+            "https://www.youtube.com/watch?v=3JVpAIJM2lw&list=RD0chK12qHGfM&index=27"
+          )
+        }
+        className="w-full rounded-xl bg-gray-900 px-3 py-2.5 text-sm font-semibold text-white hover:bg-black"
+      >
+        Cold Start? Try Demo
+      </button>
 
       <p className="text-center text-sm text-gray-600">
         <a href="#" className="font-medium hover:underline">
