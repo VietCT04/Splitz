@@ -7,10 +7,9 @@ import Avatar from "../components/ui/Avatar";
 import { Plus, Wallet } from "lucide-react";
 
 type ActivityItem = {
-  id: string;
+  id: number;
   type: "expense" | "settlement";
-  entityType: "friend" | "group";
-  entityId: string;
+  entityId: number;
   entityName: string;
   who: string;
   description: string;
@@ -20,61 +19,56 @@ type ActivityItem = {
 
 const API = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
 
-/* ---------- Demo data when no JWT ---------- */
+/* ---------- Demo data (groups only) ---------- */
 const mockActivity: ActivityItem[] = [
   {
-    id: "a1",
+    id: 1,
     type: "expense",
-    entityType: "group",
-    entityId: "bali",
+    entityId: 101,
     entityName: "Trip to Bali",
     who: "Emma",
     description: "Airport taxi",
-    amount: 42.5, // you're owed
+    amount: 42.5,
     date: "2025-09-20",
   },
   {
-    id: "a2",
+    id: 2,
     type: "expense",
-    entityType: "group",
-    entityId: "bali",
+    entityId: 101,
     entityName: "Trip to Bali",
     who: "Liam",
     description: "Villa deposit",
-    amount: -75,
+    amount: -75.0,
     date: "2025-09-19",
   },
   {
-    id: "a3",
+    id: 3,
     type: "settlement",
-    entityType: "friend",
-    entityId: "sophia",
-    entityName: "Sophia",
+    entityId: 202,
+    entityName: "Apartment 12B",
     who: "You",
     description: "Marked as paid",
-    amount: -15,
+    amount: -15.0,
     date: "2025-09-18",
   },
   {
-    id: "a4",
+    id: 4,
     type: "expense",
-    entityType: "friend",
-    entityId: "jacob",
-    entityName: "Jacob",
+    entityId: 303,
+    entityName: "Brunch Buddies",
     who: "Jacob",
     description: "Brunch",
     amount: 18.75,
     date: "2025-09-16",
   },
   {
-    id: "a5",
+    id: 5,
     type: "settlement",
-    entityType: "group",
-    entityId: "apt12b",
+    entityId: 202,
     entityName: "Apartment 12B",
     who: "You",
     description: "Rent split settled",
-    amount: 120,
+    amount: 120.0,
     date: "2025-09-15",
   },
 ];
@@ -94,7 +88,7 @@ export default function ActivityPage() {
     (async () => {
       try {
         setLoading(true);
-        const res = await fetch(`${API}/api/activity`, {
+        const res = await fetch(`${API}/activity`, {
           headers: { Authorization: `Bearer ${token}` },
           credentials: "omit",
         });
@@ -165,7 +159,7 @@ export default function ActivityPage() {
               </Link>
               {isDemo && (
                 <Link
-                  href={"/"}
+                  href="/login?next=/activity"
                   className="inline-flex items-center gap-2 rounded-xl border border-gray-900 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50"
                 >
                   Log in
@@ -206,10 +200,7 @@ export default function ActivityPage() {
               {filtered.length ? (
                 filtered.map((i) => {
                   const positive = i.amount > 0;
-                  const isGroup = i.entityType === "group";
-                  const link = isGroup
-                    ? `/groups/${i.entityId}`
-                    : `/friends/${i.entityId}`;
+                  const link = `/groups/${i.entityId}`; // entityId is number
 
                   return (
                     <li
@@ -217,11 +208,7 @@ export default function ActivityPage() {
                       className="flex items-center justify-between py-3"
                     >
                       <div className="flex items-center gap-3">
-                        <Avatar
-                          size={36}
-                          rounded="lg"
-                          src={isGroup ? "/groupavatar.png" : "/avatar.png"}
-                        />
+                        <Avatar size={36} rounded="lg" src="/groupavatar.png" />
                         <div className="text-sm">
                           <p className="font-medium text-gray-900">
                             {i.type === "expense"
@@ -231,7 +218,7 @@ export default function ActivityPage() {
                           </p>
                           <p className="text-gray-600">
                             {new Date(i.date).toLocaleDateString()} ·{" "}
-                            {i.entityName} · {isGroup ? "Group" : "Friend"}
+                            {i.entityName} · Group
                           </p>
                         </div>
                       </div>
