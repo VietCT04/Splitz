@@ -75,6 +75,7 @@ export default function GroupDetail({ params }: { params: { id: string } }) {
   const [group, setGroup] = useState<Group>(mockGroup(groupId));
   const [isDemo, setIsDemo] = useState(true);
   const [openAdd, setOpenAdd] = useState(false);
+  const [openInvite, setOpenInvite] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -91,7 +92,6 @@ export default function GroupDetail({ params }: { params: { id: string } }) {
         );
         if (!res.ok) throw new Error("bad");
         const real: Group = await res.json();
-        console.log(real);
         setGroup(real);
         setIsDemo(false);
       } catch {
@@ -155,6 +155,44 @@ export default function GroupDetail({ params }: { params: { id: string } }) {
       setOpenAdd(false);
     } catch {
       // keep demo data if it fails
+    }
+  }
+
+  async function handleInviteMember(payload: { name: string }) {
+    const token = localStorage.getItem("access_token");
+    // Demo path: append locally
+    if (!token) {
+      const nextId = Math.max(0, ...group.members.map((m) => m.id)) + 1;
+      setGroup((g) => ({
+        ...g,
+        members: [...g.members, { id: nextId, name: payload.name }],
+        memberBalances: [
+          ...g.memberBalances,
+          { memberId: nextId, name: payload.name, net: 0 },
+        ],
+      }));
+      setOpenInvite(false);
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        process.env.NEXT_PUBLIC_API_BASE_URL + `/groups/${groupId}/members`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          credentials: "omit",
+          body: JSON.stringify(payload), // { name: "New Member" }
+        }
+      );
+      if (!res.ok) throw new Error("invite failed");
+      await refetchGroup(); // refresh members + balances from server
+      setOpenInvite(false);
+    } catch {
+      // optional: toast error
     }
   }
 
@@ -285,7 +323,7 @@ export default function GroupDetail({ params }: { params: { id: string } }) {
               )}
             </ul>
 
-            {/* NEW: Server-computed member balances */}
+            {/* Server-computed member balances */}
             <MemberBalanceList balances={group.memberBalances} />
           </section>
 
@@ -318,7 +356,10 @@ export default function GroupDetail({ params }: { params: { id: string } }) {
                   </li>
                 ))}
               </ul>
-              <button className="mt-3 w-full rounded-xl border border-gray-900 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50">
+              <button
+                onClick={() => setOpenInvite(true)}
+                className="mt-3 w-full rounded-xl border border-gray-900 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50"
+              >
                 Invite member
               </button>
             </div>
@@ -332,6 +373,14 @@ export default function GroupDetail({ params }: { params: { id: string } }) {
           members={group.members}
           onClose={() => setOpenAdd(false)}
           onCreate={(payload) => handleAddExpense({ ...payload, groupId })}
+        />
+      )}
+
+      {/* INVITE MEMBER MODAL */}
+      {openInvite && (
+        <InviteMemberModal
+          onClose={() => setOpenInvite(false)}
+          onInvite={(payload) => handleInviteMember(payload)}
         />
       )}
     </div>
@@ -473,6 +522,56 @@ function AddExpenseModal({
             </button>
             <button className="rounded-xl bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-black">
               Add expense
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+/** ---------------- Invite Member Modal ---------------- */
+function InviteMemberModal({
+  onInvite,
+  onClose,
+}: {
+  onInvite: (p: { name: string }) => void;
+  onClose: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4">
+      <div className="w-full max-w-md rounded-2xl bg-white p-5 shadow-xl">
+        <h3 className="text-lg font-semibold text-gray-900">Invite member</h3>
+        <form
+          className="mt-4 space-y-3"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const fd = new FormData(e.currentTarget);
+            const name = String(fd.get("name") || "").trim();
+            if (!name) return;
+            onInvite({ name });
+          }}
+        >
+          <label className="block text-sm">
+            <span className="text-gray-700">Member name</span>
+            <input
+              name="name"
+              placeholder="e.g. Sophia"
+              className="mt-1 w-full rounded-xl border border-gray-900 px-3 py-2"
+              autoFocus
+            />
+          </label>
+
+          <div className="flex justify-end gap-2 pt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-xl border border-gray-900 px-3 py-2 text-sm"
+            >
+              Cancel
+            </button>
+            <button className="rounded-xl bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-black">
+              Invite
             </button>
           </div>
         </form>

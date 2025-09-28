@@ -6,6 +6,9 @@
 /* Strong default text color + soft bg */
 @layer base {
   html, body { @apply bg-gray-900 text-gray-900 antialiased; }
+  button, input, select, textarea {
+    @apply text-gray-900;
+  }
 }
 
 /* your own variables are fine */
