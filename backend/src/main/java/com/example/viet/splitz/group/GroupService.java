@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.swing.text.html.Option;
 import java.lang.reflect.Member;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,8 @@ public class GroupService {
     private final UserRepository userRepository;
     private final ExpenseRepository expenseRepository;
     private final MembershipRepository membershipRepository;
+
+    public record GroupListDto(Long id, String name, Long members, BigDecimal yourShare){}
 
     public GroupService(GroupRepository groupRepository, UserRepository userRepository, ExpenseRepository expenseRepository,
                         MembershipRepository membershipRepository) {
@@ -97,9 +100,20 @@ public class GroupService {
     }
 
     @Transactional(readOnly = true)
-    public List<Group> list(String name) {
+    public List<GroupListDto> list(String name) {
         Long userId = userRepository.findByName(name).orElseThrow().getId();
-        return membershipRepository.findGroupByUserId(userId);
+        List<Group> groupList = membershipRepository.findGroupByUserId(userId);
+        List<GroupListDto> groupListDtoList = new ArrayList<>();
+        for (int i = 0; i < groupList.size(); i++){
+            GroupListDto groupListDto = new GroupListDto(
+                    groupList.get(i).getId(),
+                    groupList.get(i).getName(),
+                    membershipRepository.findNumberOfMembersByGroupId(groupList.get(i).getId()),
+                    userRepository.findUserBalanceByGroupIdAndUserId(groupList.get(i).getId(), userId)
+                    );
+            groupListDtoList.add(groupListDto);
+        }
+        return groupListDtoList;
     }
 
     public void delete(Long id) {

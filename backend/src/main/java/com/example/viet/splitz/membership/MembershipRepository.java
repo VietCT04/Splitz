@@ -13,4 +13,10 @@ public interface MembershipRepository extends JpaRepository<Membership, Long> {
             where m.user.id = :userId
             """)
     List<Group> findGroupByUserId(Long userId);
+    @Query("""
+            select count(*)
+            from Membership m
+            where m.group.id = :groupId
+            """)
+    Long findNumberOfMembersByGroupId(Long groupId);
 }

@@ -5,6 +5,7 @@ import com.example.viet.splitz.user.dtos.UserResDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,4 +41,22 @@ public interface UserRepository extends JpaRepository<User, Long> {
             ORDER BY m.user.name
             """)
     List<UserBalanceDto> findUsersBalanceByGroupId(Long groupId);
+
+    @Query("""
+            SELECT
+              COALESCE( (SELECT SUM(e.amount) FROM Expense e
+                        WHERE e.group.id = :groupId AND e.user.id = :userId), 0)
+              - (
+                  (SELECT COALESCE(SUM(e2.amount), 0) FROM Expense e2
+                   WHERE e2.group.id = :groupId)
+                  / (SELECT COUNT(m2) FROM Membership m2 WHERE m2.group.id = :groupId)
+                )
+              + COALESCE( (SELECT SUM(s.amount) FROM Settlement s
+                          WHERE s.group.id = :groupId AND s.receiver.id = :userId), 0)
+              - COALESCE( (SELECT SUM(s2.amount) FROM Settlement s2
+                          WHERE s2.group.id = :groupId AND s2.payer.id = :userId), 0)
+            FROM User u
+            WHERE u.id = :userId
+            """)
+    BigDecimal findUserBalanceByGroupIdAndUserId(Long groupId, Long userId);
 }

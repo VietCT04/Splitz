@@ -42,7 +42,7 @@ public class GroupController {
     }
 
     @GetMapping
-    public List<Group> list(Authentication authentication) {
+    public List<GroupService.GroupListDto> list(Authentication authentication) {
         return groupService.list(authentication.getName());
     }
 
