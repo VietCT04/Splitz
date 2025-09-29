@@ -11,6 +11,7 @@ import com.example.viet.splitz.user.UserRepository;
 import com.example.viet.splitz.user.UserService;
 import com.example.viet.splitz.user.dtos.UserBalanceDto;
 import com.example.viet.splitz.user.dtos.UserDashboardDto;
+import jakarta.validation.constraints.Null;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -46,8 +47,8 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByName(authentication.getName()).orElseThrow();
         List<ActivityDto> activityDtoList = activityService.getActivities(authentication);
         List<Group> groupList = membershipRepository.findGroupByUserId(user.getId());
-        UserBalanceDto userBalance = membershipRepository.sumUserNetAcrossGroups(user.getId());
+        BigDecimal userBalance = membershipRepository.sumUserNetAcrossGroups(user.getId()).map(UserBalanceDto::net).orElse(BigDecimal.ZERO);
         List<String> groupNames = groupList.stream().map(Group::getName).toList();
-        return new UserDashboardDto(activityDtoList, groupNames, userBalance.net());
+        return new UserDashboardDto(activityDtoList, groupNames, userBalance);
     }
 }

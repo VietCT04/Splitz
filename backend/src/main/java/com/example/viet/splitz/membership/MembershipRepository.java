@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MembershipRepository extends JpaRepository<Membership, Long> {
     @Query("""
@@ -44,5 +45,5 @@ public interface MembershipRepository extends JpaRepository<Membership, Long> {
             WHERE u.id = :userId
             GROUP BY u.id, u.name
             """)
-    UserBalanceDto sumUserNetAcrossGroups(Long userId);
+    Optional<UserBalanceDto> sumUserNetAcrossGroups(Long userId);
 }
