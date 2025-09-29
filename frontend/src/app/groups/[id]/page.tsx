@@ -3,7 +3,8 @@
 import Link from "next/link";
 import Avatar from "../../components/ui/Avatar";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Plus, Wallet, Users, MoreHorizontal } from "lucide-react";
+import { toast } from "sonner";
+import { ArrowLeft, Plus, Wallet, Users } from "lucide-react";
 
 /** ---------- types ---------- **/
 type Member = { id: number; name: string };
@@ -70,13 +71,18 @@ const mockGroup = (id: number): Group => ({
   ],
 });
 
-export default function GroupDetail({ params }: { params: { id: number } }) {
-  const groupId = params.id;
+export default function GroupDetail({
+  params,
+}: {
+  params: { id: number | string };
+}) {
+  const groupId = Number(params.id);
 
   const [group, setGroup] = useState<Group>(mockGroup(groupId));
   const [isDemo, setIsDemo] = useState(true);
   const [openAdd, setOpenAdd] = useState(false);
   const [openInvite, setOpenInvite] = useState(false);
+  const [openSettle, setOpenSettle] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -153,7 +159,6 @@ export default function GroupDetail({ params }: { params: { id: number } }) {
         }
       );
       if (!res.ok) throw new Error("bad");
-      // ✅ Re-fetch group so memberBalances (server-computed) update correctly
       await refetchGroup();
       setOpenAdd(false);
     } catch {
@@ -169,9 +174,9 @@ export default function GroupDetail({ params }: { params: { id: number } }) {
       setGroup((g) => ({
         ...g,
         members: [...g.members, { id: nextId, name: payload.name }],
-        memberBalances: [
+        balances: [
           ...g.balances,
-          { memberId: nextId, name: payload.name, net: 0 },
+          { userId: nextId, name: payload.name, net: 0 },
         ],
       }));
       setOpenInvite(false);
@@ -223,7 +228,10 @@ export default function GroupDetail({ params }: { params: { id: number } }) {
             </div>
 
             <div className="flex items-center gap-2">
-              <button className="inline-flex items-center gap-2 rounded-xl border border-gray-900 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50">
+              <button
+                onClick={() => setOpenSettle(true)}
+                className="inline-flex items-center gap-2 rounded-xl border border-gray-900 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50"
+              >
                 <Wallet className="h-4 w-4" /> Settle Up
               </button>
               <button
@@ -340,7 +348,10 @@ export default function GroupDetail({ params }: { params: { id: number } }) {
                 >
                   + Add Expense
                 </button>
-                <button className="w-full rounded-xl border border-gray-900 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50">
+                <button
+                  onClick={() => setOpenSettle(true)}
+                  className="w-full rounded-xl border border-gray-900 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50"
+                >
                   Settle Up
                 </button>
               </div>
@@ -383,13 +394,22 @@ export default function GroupDetail({ params }: { params: { id: number } }) {
           onInvite={(payload) => handleInviteMember(payload)}
         />
       )}
+
+      {/* SETTLE UP MODAL */}
+      {openSettle && (
+        <SettleUpModal
+          groupId={groupId}
+          members={group.members}
+          onClose={() => setOpenSettle(false)}
+          onSuccess={refetchGroup}
+        />
+      )}
     </div>
   );
 }
 
 /** ---------------- Member Balances (server data) ---------------- */
 function MemberBalanceList({ balances }: { balances: MemberBalance[] }) {
-  console.log(balances);
   if (!balances?.length) {
     return (
       <div className="rounded-xl border bg-white p-4 shadow-sm">
@@ -570,6 +590,132 @@ function InviteMemberModal({
             </button>
             <button className="rounded-xl bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-black">
               Invite
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+/** ---------------- Settle Up Modal ---------------- */
+function SettleUpModal({
+  groupId,
+  members,
+  onClose,
+  onSuccess,
+}: {
+  groupId: number;
+  members: Member[];
+  onClose: () => void;
+  onSuccess: () => void | Promise<void>;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4">
+      <div className="w-full max-w-md rounded-2xl bg-white p-5 shadow-xl">
+        <h3 className="text-lg font-semibold text-gray-900">Settle up</h3>
+
+        <form
+          className="mt-4 space-y-3"
+          onSubmit={async (e) => {
+            e.preventDefault();
+            const fd = new FormData(e.currentTarget);
+            const amount = Number(fd.get("amount") || 0);
+            const receiverId = Number(fd.get("receiverId") || 0);
+            const date =
+              String(fd.get("date")) || new Date().toISOString().slice(0, 10);
+
+            if (!amount || amount <= 0 || !receiverId) return;
+
+            const token = localStorage.getItem("access_token");
+            if (!token) {
+              onClose();
+              return;
+            }
+
+            try {
+              const res = await fetch(
+                process.env.NEXT_PUBLIC_API_BASE_URL + `/expense`,
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                  },
+                  credentials: "omit",
+                  // Back-end should infer payer from JWT; this marks the record as a settlement-like expense.
+                  body: JSON.stringify({
+                    groupId,
+                    amount,
+                    date,
+                    receiverId,
+                    type: "SETTLEMENT",
+                    description: "Settle up",
+                  }),
+                }
+              );
+              if (!res.ok) throw new Error("request failed");
+              toast.success("Settlement recorded");
+              await onSuccess();
+              onClose();
+            } catch {
+              const msg = e instanceof Error ? e.message : "Unexpected error";
+              toast.error("Could not record settlement", { description: msg });
+            }
+          }}
+        >
+          <label className="block text-sm">
+            <span className="text-gray-700">Amount</span>
+            <input
+              name="amount"
+              type="number"
+              step="0.01"
+              min="0.01"
+              placeholder="0.00"
+              className="mt-1 w-full rounded-xl border border-gray-900 px-3 py-2"
+            />
+          </label>
+
+          <div className="grid grid-cols-2 gap-3">
+            <label className="block text-sm">
+              <span className="text-gray-700">Date</span>
+              <input
+                name="date"
+                type="date"
+                defaultValue={new Date().toISOString().slice(0, 10)}
+                className="mt-1 w-full rounded-xl border border-gray-900 px-3 py-2"
+              />
+            </label>
+
+            <label className="block text-sm">
+              <span className="text-gray-700">Receiver</span>
+              <select
+                name="receiverId"
+                className="mt-1 w-full rounded-xl border border-gray-900 bg-white px-3 py-2"
+                defaultValue=""
+              >
+                <option value="" disabled>
+                  Select member
+                </option>
+                {members.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <div className="flex justify-end gap-2 pt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-xl border border-gray-900 px-3 py-2 text-sm"
+            >
+              Cancel
+            </button>
+            <button className="rounded-xl bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-black">
+              Record settlement
             </button>
           </div>
         </form>

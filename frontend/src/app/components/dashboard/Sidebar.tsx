@@ -14,7 +14,7 @@ const nav = [
   { href: "/groups", label: "Groups", icon: Users },
   //{ href: "/friends", label: "Friends", icon: UserRound },
   { href: "/activity", label: "Activity", icon: Activity },
-  { href: "/settle-up", label: "Settle Up", icon: Wallet },
+  //{ href: "/settle-up", label: "Settle Up", icon: Wallet },
   //{ href: "/reports", label: "Reports", icon: BarChart3 },
   { href: "/settings", label: "Settings", icon: Settings },
 ];

@@ -3,7 +3,6 @@
 import Avatar from "../components/ui/Avatar";
 import Sidebar from "../components/dashboard/Sidebar";
 import StatCard from "../components/dashboard/StatCard";
-import { Plus, Wallet, Users } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
@@ -12,16 +11,15 @@ type Dash = {
   activity: {
     id: string;
     type: "expense" | "settlement";
-    entityId: number;
+    entityId: number; // group id
     entityName: string;
     who: string;
     description: string;
     amount: number;
     date: string;
   }[];
-  //friends: { userId: number; name: string; amount: number }[];
-  groups: string[];
-  stats: number;
+  groups: string[]; // (kept as names only for now)
+  stats: number; // net balance
 };
 // -----------------------
 
@@ -60,11 +58,6 @@ function getMock(): Dash {
         date: "2025-09-18",
       },
     ],
-    // friends: [
-    //   { userId: 1, name: "Jacob", amount: 50 },
-    //   { userId: 2, name: "Sophia", amount: -15 },
-    //   { userId: 3, name: "James", amount: 8.25 },
-    // ],
     groups: ["Trip to Bali", "Apartment 12B", "Brunch Buddies"],
     stats: 78.3,
   };
@@ -87,7 +80,6 @@ export default function DashboardPage() {
             credentials: "omit",
           }
         );
-        console.log("Dashboard fetch response:", res);
         if (!res.ok) throw new Error();
         const real: Dash = await res.json();
         setData(real);
@@ -98,7 +90,7 @@ export default function DashboardPage() {
     })();
   }, []);
 
-  // derive friendly activity list (newest first)
+  // newest first
   const activity = useMemo(
     () =>
       [...data.activity].sort((a, b) => +new Date(b.date) - +new Date(a.date)),
@@ -120,15 +112,12 @@ export default function DashboardPage() {
           {/* top bar */}
           <div className="flex items-center justify-end">
             <div className="ml-4 flex items-center gap-2">
-              <button className="inline-flex items-center gap-2 rounded-xl bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-black">
-                <Plus className="h-4 w-4" /> Add Expense
-              </button>
-              <button className="inline-flex items-center gap-2 rounded-xl border border-gray-900 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50">
-                <Wallet className="h-4 w-4" /> Settle Up
-              </button>
-              <button className="inline-flex items-center gap-2 rounded-xl border border-gray-900 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50">
-                <Users className="h-4 w-4" /> Create Group
-              </button>
+              <Link
+                href="/groups"
+                className="inline-flex items-center gap-2 rounded-xl border border-gray-900 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50"
+              >
+                Create Group
+              </Link>
               {isDemo && (
                 <Link
                   href="/"
@@ -140,10 +129,9 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* stats (only Net now) */}
-          {/* 2-column page layout: LEFT (2/3) · RIGHT (1/3) */}
+          {/* 2-column layout: LEFT (2/3) · RIGHT (1/3) */}
           <div className="grid gap-6 lg:grid-cols-3">
-            {/* LEFT column (2/3): Net balance → Recent activity → Friends balances */}
+            {/* LEFT column */}
             <div className="space-y-6 lg:col-span-2">
               {/* Net balance */}
               <div className="grid grid-cols-1">
@@ -166,9 +154,10 @@ export default function DashboardPage() {
                     •••
                   </button>
                 </div>
+
                 <ul className="mt-3 divide-y">
-                  {data.activity.length ? (
-                    data.activity.map((a) => (
+                  {activity.length ? (
+                    activity.map((a) => (
                       <li
                         key={a.id}
                         className="flex items-center justify-between py-3"
@@ -204,9 +193,13 @@ export default function DashboardPage() {
                             {a.amount > 0 ? "+" : a.amount < 0 ? "-" : ""}$
                             {Math.abs(a.amount).toFixed(2)}
                           </span>
-                          <button className="rounded-xl border border-gray-900 px-3 py-1.5 text-sm text-gray-900 hover:bg-gray-50">
+                          {/* Open -> group id path */}
+                          <Link
+                            href={`/groups/${a.entityId}`}
+                            className="rounded-xl border border-gray-900 px-3 py-1.5 text-sm text-gray-900 hover:bg-gray-50"
+                          >
                             Open
-                          </button>
+                          </Link>
                         </div>
                       </li>
                     ))
@@ -217,48 +210,9 @@ export default function DashboardPage() {
                   )}
                 </ul>
               </div>
-
-              {/* Friends balances
-              <div className="rounded-xl border bg-white p-4 shadow-sm">
-                <h3 className="text-sm font-medium text-gray-900">
-                  Friends balances
-                </h3>
-                <ul className="mt-3 space-y-3">
-                  {data.friends.length ? (
-                    data.friends.map((f, i) => (
-                      <li key={i} className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <Avatar size={40} rounded="lg" src="/avatar.jpg" />
-                          <div className="text-sm">
-                            <p className="font-medium text-gray-900">
-                              {f.name}
-                            </p>
-                          </div>
-                        </div>
-                        <span
-                          className={`rounded-full px-2 py-1 text-xs font-semibold ${
-                            f.amount > 0
-                              ? "bg-emerald-100 text-emerald-700"
-                              : f.amount < 0
-                              ? "bg-rose-100 text-rose-700"
-                              : "bg-gray-100 text-gray-700"
-                          }`}
-                        >
-                          {f.amount > 0 ? "+" : f.amount < 0 ? "-" : ""}$
-                          {Math.abs(f.amount).toFixed(2)}
-                        </span>
-                      </li>
-                    ))
-                  ) : (
-                    <li className="py-4 text-sm text-gray-500">
-                      No friends yet
-                    </li>
-                  )}
-                </ul>
-              </div> */}
             </div>
 
-            {/* RIGHT column (1/3): Groups */}
+            {/* RIGHT column: Groups */}
             <aside className="space-y-6">
               <div className="rounded-xl border bg-white p-4 shadow-sm">
                 <h3 className="text-sm font-medium text-gray-900">Groups</h3>
@@ -276,6 +230,8 @@ export default function DashboardPage() {
                             <p className="font-medium text-gray-900">{g}</p>
                           </div>
                         </div>
+                        {/* No id available for groups[] here; just show the name. 
+                           If your API returns ids, switch groups to {id,name}[] and link to /groups/{id}. */}
                       </li>
                     ))
                   ) : (

@@ -147,12 +147,12 @@ export default function ActivityPage() {
               className="w-full max-w-md rounded-xl border border-gray-900 bg-white px-3 py-2 text-gray-900 placeholder:text-gray-500"
             />
             <div className="flex items-center gap-2">
-              <Link
+              {/* <Link
                 href="/settle-up"
                 className="inline-flex items-center gap-2 rounded-xl bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-black"
               >
                 <Wallet className="h-4 w-4" /> Settle Up
-              </Link>
+              </Link> */}
               <Link
                 href="/groups"
                 className="inline-flex items-center gap-2 rounded-xl border border-gray-900 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50"
