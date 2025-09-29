@@ -161,7 +161,7 @@ export default function ActivityPage() {
               </Link>
               {isDemo && (
                 <Link
-                  href="/login?next=/activity"
+                  href="/"
                   className="inline-flex items-center gap-2 rounded-xl border border-gray-900 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50"
                 >
                   Log in
