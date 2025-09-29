@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Sidebar from "../components/dashboard/Sidebar";
 import Avatar from "../components/ui/Avatar";
-import { Plus, Wallet } from "lucide-react";
+import { Plus } from "lucide-react";
 
 type ActivityItem = {
   id: string;

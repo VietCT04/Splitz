@@ -148,8 +148,8 @@ export default function SettleUpPage() {
       }
 
       toast("Settlement recorded");
-    } catch (e: any) {
-      toast(undefined, e.message ?? "Something went wrong");
+    } catch (e) {
+      toast(e + "Something went wrong");
     } finally {
       setSubmitting(false);
     }

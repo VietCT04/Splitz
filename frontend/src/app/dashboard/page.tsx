@@ -221,10 +221,10 @@ export default function DashboardPage() {
                     data.groups.map((g, i) => (
                       <li key={i} className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <img
+                          <Avatar
+                            size={36}
+                            rounded="lg"
                             src="/groupavatar.png"
-                            alt=""
-                            className="h-8 w-8 rounded-lg"
                           />
                           <div className="text-sm">
                             <p className="font-medium text-gray-900">{g}</p>

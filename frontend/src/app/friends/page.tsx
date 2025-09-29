@@ -215,8 +215,8 @@ export default function FriendsPage() {
                   if (!res.ok) throw new Error("Create failed");
                   await loadFriends(token);
                   setOpenCreate(false);
-                } catch (e: any) {
-                  setErr(e.message ?? "Something went wrong");
+                } catch (e) {
+                  setErr(e + "Something went wrong");
                 } finally {
                   setSubmitting(false);
                 }

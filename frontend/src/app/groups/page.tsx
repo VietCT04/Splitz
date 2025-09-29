@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import Sidebar from "../components/dashboard/Sidebar";
-import { Plus, Users, Wallet } from "lucide-react";
+import { Plus, Users } from "lucide-react";
 import { getErrorMessage } from "../components/getErrorMessage";
 
 type Group = {

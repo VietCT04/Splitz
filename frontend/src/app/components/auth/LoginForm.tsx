@@ -45,8 +45,8 @@ export default function LoginForm(): React.JSX.Element {
       localStorage.setItem("access_token", accessToken);
 
       router.replace(next);
-    } catch (err: any) {
-      setError(err?.message ?? "Something went wrong.");
+    } catch (err) {
+      setError(err + "Something went wrong.");
     } finally {
       setLoading(false);
     }

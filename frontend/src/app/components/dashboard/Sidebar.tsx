@@ -4,7 +4,7 @@ import {
   Users,
   //UserRound,
   Activity,
-  Wallet,
+  //Wallet,
   //BarChart3,
   Settings,
 } from "lucide-react";
