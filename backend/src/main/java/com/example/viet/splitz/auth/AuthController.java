@@ -16,6 +16,7 @@ public class AuthController {
 
     private record TokenRes(String accessToken) {
     }
+    public record UsernameDto(String username){}
 
     private final AuthService svc;
 
@@ -27,6 +28,12 @@ public class AuthController {
     public ResponseEntity<Void> signup(@RequestBody AuthReq req) {
         svc.signup(req.name(), req.password());
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PutMapping("/me")
+    public ResponseEntity<String> updateUserName(Authentication authentication, @RequestBody UsernameDto usernameDto){
+        svc.updateUserName(authentication.getName(), usernameDto.username());
+        return ResponseEntity.ok("Success");
     }
 
     @PostMapping("/login")

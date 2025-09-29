@@ -29,6 +29,12 @@ public class AuthService {
         repo.save(u);
     }
 
+    public void updateUserName(String oldUserName, String userName){
+        User user = repo.findByName(oldUserName).orElseThrow();
+        user.setName(userName);
+        repo.save(user);
+    }
+
     public String login(String name, String password) {
         authManager.authenticate(new UsernamePasswordAuthenticationToken(name, password));
         var user = repo.findByName(name).orElseThrow();
