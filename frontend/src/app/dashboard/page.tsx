@@ -19,9 +19,9 @@ type Dash = {
     amount: number;
     date: string;
   }[];
-  friends: { name: string; amount: number }[];
-  groups: { name: string }[];
-  stats: { net: number };
+  //friends: { userId: number; name: string; amount: number }[];
+  groups: string[];
+  stats: number;
 };
 // -----------------------
 
@@ -60,17 +60,13 @@ function getMock(): Dash {
         date: "2025-09-18",
       },
     ],
-    friends: [
-      { name: "Jacob", amount: 50 },
-      { name: "Sophia", amount: -15 },
-      { name: "James", amount: 8.25 },
-    ],
-    groups: [
-      { name: "Trip to Bali" },
-      { name: "Apartment 12B" },
-      { name: "Brunch Buddies" },
-    ],
-    stats: { net: 78.3 },
+    // friends: [
+    //   { userId: 1, name: "Jacob", amount: 50 },
+    //   { userId: 2, name: "Sophia", amount: -15 },
+    //   { userId: 3, name: "James", amount: 8.25 },
+    // ],
+    groups: ["Trip to Bali", "Apartment 12B", "Brunch Buddies"],
+    stats: 78.3,
   };
 }
 
@@ -149,10 +145,10 @@ export default function DashboardPage() {
               <div className="grid grid-cols-1">
                 <StatCard
                   title="Net balance"
-                  value={`${data.stats.net >= 0 ? "+" : "-"} $${Math.abs(
-                    data.stats.net
+                  value={`${data.stats >= 0 ? "+" : "-"} $${Math.abs(
+                    data.stats
                   ).toFixed(2)}`}
-                  variant={data.stats.net >= 0 ? "success" : "danger"}
+                  variant={data.stats >= 0 ? "success" : "danger"}
                 />
               </div>
 
@@ -218,7 +214,7 @@ export default function DashboardPage() {
                 </ul>
               </div>
 
-              {/* Friends balances */}
+              {/* Friends balances
               <div className="rounded-xl border bg-white p-4 shadow-sm">
                 <h3 className="text-sm font-medium text-gray-900">
                   Friends balances
@@ -255,7 +251,7 @@ export default function DashboardPage() {
                     </li>
                   )}
                 </ul>
-              </div>
+              </div> */}
             </div>
 
             {/* RIGHT column (1/3): Groups */}
@@ -273,9 +269,7 @@ export default function DashboardPage() {
                             className="h-8 w-8 rounded-lg"
                           />
                           <div className="text-sm">
-                            <p className="font-medium text-gray-900">
-                              {g.name}
-                            </p>
+                            <p className="font-medium text-gray-900">{g}</p>
                           </div>
                         </div>
                       </li>
