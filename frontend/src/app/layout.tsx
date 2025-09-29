@@ -1,13 +1,9 @@
 import type { Metadata } from "next";
-import { Toaster } from "sonner"; 
+import { Toaster } from "sonner";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
+const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
@@ -20,15 +16,42 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-dvh`}
       >
-        {children}
+        {/* main content gets bottom padding so the fixed footer doesn't overlap */}
+        <main className="pb-10">{children}</main>
+
+        {/* Fixed footer */}
+        <footer className="fixed inset-x-0 bottom-0 z-40 border-t border-gray-200 bg-gray-50/95 backdrop-blur">
+          <div className="mx-auto max-w-5xl px-4 py-3 text-xl text-gray-600 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <p>
+              © {new Date().getFullYear()} Tran Son Viet. All rights reserved.
+            </p>
+            <div className="flex items-center gap-4">
+              <a
+                href="https://github.com/VietCT04/Splitz"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-gray-800"
+              >
+                GitHub
+              </a>
+              <a
+                href="mailto:transonviet2004@gmail.com"
+                className="hover:text-gray-800"
+              >
+                transonviet2004@gmail.com
+              </a>
+            </div>
+          </div>
+        </footer>
+
         <Toaster richColors closeButton position="top-right" />
       </body>
     </html>
