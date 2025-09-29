@@ -30,9 +30,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
                      WHERE e2.group = m.group)
                     / (SELECT COUNT(m2) FROM Membership m2 WHERE m2.group = m.group)
                   )
-                - COALESCE( (SELECT SUM(s.amount) FROM Settlement s
+                + COALESCE( (SELECT SUM(s.amount) FROM Settlement s
                             WHERE s.group = m.group AND s.receiver = m.user), 0)
-                + COALESCE( (SELECT SUM(s2.amount) FROM Settlement s2
+                - COALESCE( (SELECT SUM(s2.amount) FROM Settlement s2
                             WHERE s2.group = m.group AND s2.payer = m.user), 0)
               )
             )
@@ -51,9 +51,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
                    WHERE e2.group.id = :groupId)
                   / (SELECT COUNT(m2) FROM Membership m2 WHERE m2.group.id = :groupId)
                 )
-              - COALESCE( (SELECT SUM(s.amount) FROM Settlement s
+              + COALESCE( (SELECT SUM(s.amount) FROM Settlement s
                           WHERE s.group.id = :groupId AND s.receiver.id = :userId), 0)
-              + COALESCE( (SELECT SUM(s2.amount) FROM Settlement s2
+              - COALESCE( (SELECT SUM(s2.amount) FROM Settlement s2
                           WHERE s2.group.id = :groupId AND s2.payer.id = :userId), 0)
             FROM User u
             WHERE u.id = :userId
