@@ -7,7 +7,7 @@ import Avatar from "../components/ui/Avatar";
 import { Plus, Wallet } from "lucide-react";
 
 type ActivityItem = {
-  id: number;
+  id: string;
   type: "expense" | "settlement";
   entityId: number;
   entityName: string;
@@ -22,7 +22,7 @@ const API = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
 /* ---------- Demo data (groups only) ---------- */
 const mockActivity: ActivityItem[] = [
   {
-    id: 1,
+    id: "1",
     type: "expense",
     entityId: 101,
     entityName: "Trip to Bali",
@@ -32,7 +32,7 @@ const mockActivity: ActivityItem[] = [
     date: "2025-09-20",
   },
   {
-    id: 2,
+    id: "2",
     type: "expense",
     entityId: 101,
     entityName: "Trip to Bali",
@@ -42,7 +42,7 @@ const mockActivity: ActivityItem[] = [
     date: "2025-09-19",
   },
   {
-    id: 3,
+    id: "3",
     type: "settlement",
     entityId: 202,
     entityName: "Apartment 12B",
@@ -52,7 +52,7 @@ const mockActivity: ActivityItem[] = [
     date: "2025-09-18",
   },
   {
-    id: 4,
+    id: "4",
     type: "expense",
     entityId: 303,
     entityName: "Brunch Buddies",
@@ -62,7 +62,7 @@ const mockActivity: ActivityItem[] = [
     date: "2025-09-16",
   },
   {
-    id: 5,
+    id: "5",
     type: "settlement",
     entityId: 202,
     entityName: "Apartment 12B",
@@ -87,13 +87,15 @@ export default function ActivityPage() {
 
     (async () => {
       try {
+        console.log("Fetching real activity...");
         setLoading(true);
-        const res = await fetch(`${API}/activity`, {
+        const res = await fetch(`${API}/activities`, {
           headers: { Authorization: `Bearer ${token}` },
           credentials: "omit",
         });
         if (!res.ok) throw new Error("Failed to load activity");
         const data: ActivityItem[] = await res.json();
+        console.log("Fetched activity:", data);
         setItems(data);
         setIsDemo(false);
       } catch {

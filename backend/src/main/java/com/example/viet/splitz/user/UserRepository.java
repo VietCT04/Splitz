@@ -23,16 +23,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
               m.user.id,
               m.user.name,
               (
-                COALESCE( (SELECT SUM(e.amount) FROM Expense e
+                - COALESCE( (SELECT SUM(e.amount) FROM Expense e
                           WHERE e.group = m.group AND e.user = m.user), 0)
-                - (
+                + (
                     (SELECT COALESCE(SUM(e2.amount), 0) FROM Expense e2
                      WHERE e2.group = m.group)
                     / (SELECT COUNT(m2) FROM Membership m2 WHERE m2.group = m.group)
                   )
-                + COALESCE( (SELECT SUM(s.amount) FROM Settlement s
+                - COALESCE( (SELECT SUM(s.amount) FROM Settlement s
                             WHERE s.group = m.group AND s.receiver = m.user), 0)
-                - COALESCE( (SELECT SUM(s2.amount) FROM Settlement s2
+                + COALESCE( (SELECT SUM(s2.amount) FROM Settlement s2
                             WHERE s2.group = m.group AND s2.payer = m.user), 0)
               )
             )
@@ -44,16 +44,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("""
             SELECT
-              COALESCE( (SELECT SUM(e.amount) FROM Expense e
+              - COALESCE( (SELECT SUM(e.amount) FROM Expense e
                         WHERE e.group.id = :groupId AND e.user.id = :userId), 0)
-              - (
+              + (
                   (SELECT COALESCE(SUM(e2.amount), 0) FROM Expense e2
                    WHERE e2.group.id = :groupId)
                   / (SELECT COUNT(m2) FROM Membership m2 WHERE m2.group.id = :groupId)
                 )
-              + COALESCE( (SELECT SUM(s.amount) FROM Settlement s
+              - COALESCE( (SELECT SUM(s.amount) FROM Settlement s
                           WHERE s.group.id = :groupId AND s.receiver.id = :userId), 0)
-              - COALESCE( (SELECT SUM(s2.amount) FROM Settlement s2
+              + COALESCE( (SELECT SUM(s2.amount) FROM Settlement s2
                           WHERE s2.group.id = :groupId AND s2.payer.id = :userId), 0)
             FROM User u
             WHERE u.id = :userId
