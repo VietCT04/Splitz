@@ -1,10 +1,9 @@
 package com.example.viet.splitz.user;
 
+import com.example.viet.splitz.user.dtos.UserDashboardDto;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 import java.awt.desktop.SystemSleepEvent;
 
@@ -21,6 +20,11 @@ public class UserController {
     public ResponseEntity<String> createNewUser(@RequestBody User user){
         userService.createNewUser(user);
         return ResponseEntity.ok("Create New User Succeeded");
+    }
+
+    @GetMapping("/dashboard")
+    public ResponseEntity<UserDashboardDto> getUserDashboard(Authentication authentication){
+        return ResponseEntity.ok(userService.getUserDashboard(authentication));
     }
 
     @PostMapping("/delete")
