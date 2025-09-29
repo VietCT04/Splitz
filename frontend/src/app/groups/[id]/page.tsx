@@ -635,7 +635,7 @@ function SettleUpModal({
 
             try {
               const res = await fetch(
-                process.env.NEXT_PUBLIC_API_BASE_URL + `/expense`,
+                process.env.NEXT_PUBLIC_API_BASE_URL + `/settlement`,
                 {
                   method: "POST",
                   headers: {
@@ -649,8 +649,6 @@ function SettleUpModal({
                     amount,
                     date,
                     receiverId,
-                    type: "SETTLEMENT",
-                    description: "Settle up",
                   }),
                 }
               );

@@ -6,22 +6,11 @@ import Sidebar from "../components/dashboard/Sidebar";
 import { LogOut } from "lucide-react";
 
 type User = {
-  name: string;
-  email: string;
-  currency: "USD" | "EUR" | "IDR" | "JPY" | "SGD";
-  theme: "system" | "light" | "dark";
-  notifications: { email: boolean; push: boolean };
+  username: string;
 };
 
-const API = "http://localhost:8080";
-
-// Demo fallback
 const mockUser: User = {
-  name: "Alex Johnson",
-  email: "alex@example.com",
-  currency: "USD",
-  theme: "system",
-  notifications: { email: true, push: false },
+  username: "Alex Johnson",
 };
 
 const getErrorMessage = (e: unknown): string => {
@@ -33,6 +22,7 @@ const getErrorMessage = (e: unknown): string => {
     return String(e);
   }
 };
+
 export default function SettingsPage() {
   const router = useRouter();
   const [user, setUser] = useState<User>(mockUser);
@@ -41,7 +31,6 @@ export default function SettingsPage() {
 
   const [pwd, setPwd] = useState({ current: "", next: "" });
   const [savingProfile, setSavingProfile] = useState(false);
-  const [savingPrefs, setSavingPrefs] = useState(false);
   const [changingPwd, setChangingPwd] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [ok, setOk] = useState<string | null>(null);
@@ -54,12 +43,16 @@ export default function SettingsPage() {
     (async () => {
       try {
         setLoading(true);
-        const res = await fetch(process.env.NEXT_PUBLIC_API_BASE_URL + `/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-          credentials: "omit",
-        });
+        const res = await fetch(
+          process.env.NEXT_PUBLIC_API_BASE_URL + `/auth/me`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            credentials: "omit",
+          }
+        );
         if (!res.ok) throw new Error("Failed to load profile");
-        const data: User = await res.json();
+        const data = await res.json();
+        console.log("Fetched user:", data);
         setUser(data);
         setIsDemo(false);
       } catch {
@@ -82,51 +75,23 @@ export default function SettingsPage() {
     if (!token) return toast(undefined, "Please log in");
     try {
       setSavingProfile(true);
-      const res = await fetch(process.env.NEXT_PUBLIC_API_BASE_URL + `/me`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ name: user.name, email: user.email }),
-      });
-      if (!res.ok) throw new Error("Could not save profile");
-      toast("Profile saved");
-    } catch (e) {
-      const msg = getErrorMessage(e);
-      toast(undefined, msg);
-    } finally {
-      setSavingProfile(false);
-    }
-  }
-
-  async function savePreferences() {
-    const token = localStorage.getItem("access_token");
-    if (!token) return toast(undefined, "Please log in");
-    try {
-      setSavingPrefs(true);
       const res = await fetch(
-        process.env.NEXT_PUBLIC_API_BASE_URL + `/settings`,
+        process.env.NEXT_PUBLIC_API_BASE_URL + `/auth/me`,
         {
-          method: "PATCH",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({
-            currency: user.currency,
-            theme: user.theme,
-            notifications: user.notifications,
-          }),
+          body: JSON.stringify({ username: user.username }),
         }
       );
-      if (!res.ok) throw new Error("Could not save settings");
-      toast("Settings saved");
+      if (!res.ok) throw new Error("Could not save profile");
+      toast("Profile saved");
     } catch (e) {
-      const msg = getErrorMessage(e);
-      toast(undefined, msg);
+      toast(undefined, getErrorMessage(e));
     } finally {
-      setSavingPrefs(false);
+      setSavingProfile(false);
     }
   }
 
@@ -154,8 +119,7 @@ export default function SettingsPage() {
       setPwd({ current: "", next: "" });
       toast("Password updated");
     } catch (e) {
-      const msg = getErrorMessage(e);
-      toast(undefined, msg);
+      toast(undefined, getErrorMessage(e));
     } finally {
       setChangingPwd(false);
     }
@@ -181,8 +145,7 @@ export default function SettingsPage() {
       if (!res.ok) throw new Error("Delete failed");
       signOut();
     } catch (e) {
-      const msg = getErrorMessage(e);
-      toast(undefined, msg);
+      toast(undefined, getErrorMessage(e));
     }
   }
 
@@ -242,28 +205,18 @@ export default function SettingsPage() {
           <div className="grid gap-6 lg:grid-cols-3">
             {/* Left column: Profile + Password */}
             <section className="lg:col-span-2 space-y-6">
-              {/* Profile */}
+              {/* Profile (Name only) */}
               <div className="rounded-xl border bg-white p-4 shadow-sm">
                 <h2 className="text-sm font-medium text-gray-900">Profile</h2>
                 <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                  <label className="text-sm">
-                    <span className="text-gray-700">Name</span>
+                  <label className="text-sm sm:col-span-2">
+                    <span className="text-gray-700">Username</span>
                     <input
-                      value={user.name}
+                      value={user.username ?? ""}
                       onChange={(e) =>
-                        setUser({ ...user, name: e.target.value })
+                        setUser({ ...user, username: e.target.value })
                       }
-                      className="mt-1 w-full rounded-xl border border-gray-900 px-3 py-2"
-                    />
-                  </label>
-                  <label className="text-sm">
-                    <span className="text-gray-700">Email</span>
-                    <input
-                      type="email"
-                      value={user.email}
-                      onChange={(e) =>
-                        setUser({ ...user, email: e.target.value })
-                      }
+                      placeholder="Your name"
                       className="mt-1 w-full rounded-xl border border-gray-900 px-3 py-2"
                     />
                   </label>
@@ -279,7 +232,7 @@ export default function SettingsPage() {
                 </div>
               </div>
 
-              {/* Password */}
+              {/* Change password */}
               <div className="rounded-xl border bg-white p-4 shadow-sm">
                 <h2 className="text-sm font-medium text-gray-900">
                   Change password
@@ -318,104 +271,8 @@ export default function SettingsPage() {
               </div>
             </section>
 
-            {/* Right column: Preferences, Notifications, Danger */}
+            {/* Right column: Danger zone */}
             <aside className="space-y-6">
-              {/* Preferences */}
-              <div className="rounded-xl border bg-white p-4 shadow-sm">
-                <h2 className="text-sm font-medium text-gray-900">
-                  Preferences
-                </h2>
-
-                <div className="mt-3 text-sm">
-                  <p className="text-gray-700">Theme</p>
-                  <div className="mt-2 flex gap-3">
-                    {(["system", "light", "dark"] as const).map((t) => (
-                      <label key={t} className="inline-flex items-center gap-2">
-                        <input
-                          type="radio"
-                          name="theme"
-                          checked={user.theme === t}
-                          onChange={() => setUser({ ...user, theme: t })}
-                        />
-                        <span className="capitalize">{t}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="mt-4 text-sm">
-                  <p className="text-gray-700">Default currency</p>
-                  <select
-                    value={user.currency}
-                    onChange={(e) =>
-                      setUser({
-                        ...user,
-                        currency: e.target.value as User["currency"],
-                      })
-                    }
-                    className="mt-2 w-full rounded-xl border border-gray-900 bg-white px-3 py-2"
-                  >
-                    {["USD", "EUR", "IDR", "JPY", "SGD"].map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="mt-4 flex justify-end">
-                  <button
-                    disabled={savingPrefs || isDemo}
-                    onClick={savePreferences}
-                    className="rounded-xl bg-gray-900 px-3 py-2 text-sm font-medium text-white hover:bg-black disabled:opacity-60"
-                  >
-                    {savingPrefs ? "Saving…" : "Save preferences"}
-                  </button>
-                </div>
-              </div>
-
-              {/* Notifications */}
-              <div className="rounded-xl border bg-white p-4 shadow-sm">
-                <h2 className="text-sm font-medium text-gray-900">
-                  Notifications
-                </h2>
-                <div className="mt-3 space-y-2 text-sm">
-                  <label className="flex items-center justify-between">
-                    <span>Email updates</span>
-                    <input
-                      type="checkbox"
-                      checked={user.notifications.email}
-                      onChange={(e) =>
-                        setUser({
-                          ...user,
-                          notifications: {
-                            ...user.notifications,
-                            email: e.target.checked,
-                          },
-                        })
-                      }
-                    />
-                  </label>
-                  <label className="flex items-center justify-between">
-                    <span>Push notifications</span>
-                    <input
-                      type="checkbox"
-                      checked={user.notifications.push}
-                      onChange={(e) =>
-                        setUser({
-                          ...user,
-                          notifications: {
-                            ...user.notifications,
-                            push: e.target.checked,
-                          },
-                        })
-                      }
-                    />
-                  </label>
-                </div>
-              </div>
-
-              {/* Danger zone */}
               <div className="rounded-xl border bg-white p-4 shadow-sm">
                 <h2 className="text-sm font-medium text-gray-900">
                   Danger zone
