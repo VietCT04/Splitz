@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Avatar from "../../components/ui/Avatar";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Plus, Wallet, Users, MoreHorizontal } from "lucide-react";
 
@@ -281,9 +282,6 @@ export default function GroupDetail({ params }: { params: { id: number } }) {
               <h2 className="text-sm font-medium text-gray-900">
                 Recent expenses
               </h2>
-              <button className="rounded-xl border border-gray-900 px-2 py-1 text-xs">
-                <MoreHorizontal className="h-4 w-4" />
-              </button>
             </div>
 
             <ul className="rounded-xl border bg-white shadow-sm divide-y">
@@ -312,9 +310,6 @@ export default function GroupDetail({ params }: { params: { id: number } }) {
                       <span className="rounded-full bg-gray-900 px-2 py-1 text-xs font-semibold text-white">
                         ${e.amount.toFixed(2)}
                       </span>
-                      <button className="rounded-xl border border-gray-900 px-3 py-1.5 text-sm text-gray-900 hover:bg-gray-50">
-                        Settle
-                      </button>
                     </div>
                   </li>
                 ))
@@ -326,6 +321,9 @@ export default function GroupDetail({ params }: { params: { id: number } }) {
             </ul>
 
             {/* Server-computed member balances */}
+            <h3 className="text-sm font-medium text-gray-900">
+              Member balances
+            </h3>
             <MemberBalanceList balances={group.balances} />
           </section>
 
@@ -395,37 +393,34 @@ function MemberBalanceList({ balances }: { balances: MemberBalance[] }) {
   if (!balances?.length) {
     return (
       <div className="rounded-xl border bg-white p-4 shadow-sm">
-        <h3 className="text-sm font-medium text-gray-900">Member balances</h3>
         <p className="mt-3 text-sm text-gray-600">No balances yet</p>
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl border bg-white p-4 shadow-sm">
-      <h3 className="text-sm font-medium text-gray-900">Member balances</h3>
-      <ul className="mt-3 space-y-3">
-        {balances.map((b) => (
-          <li key={b.userId} className="flex items-center justify-between">
-            <div className="text-sm">
-              <p className="font-medium text-gray-900">{b.name}</p>
-            </div>
-            <span
-              className={`rounded-full px-2 py-1 text-xs font-semibold ${
-                b.net > 0
-                  ? "bg-emerald-100 text-emerald-700"
-                  : b.net < 0
-                  ? "bg-rose-100 text-rose-700"
-                  : "bg-gray-100 text-gray-700"
-              }`}
-            >
-              {b.net > 0 ? "+" : b.net < 0 ? "-" : ""}$
-              {Math.abs(b.net).toFixed(2)}
-            </span>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <ul className="rounded-xl border bg-white shadow-sm divide-y">
+      {balances.map((b) => (
+        <li key={b.userId} className="flex items-center justify-between p-4">
+          <div className="text-sm flex items-center gap-2">
+            <Avatar size={32} rounded="lg" />
+            <p className="font-medium text-gray-900">{b.name}</p>
+          </div>
+          <span
+            className={`rounded-full px-2 py-1 text-xs font-semibold ${
+              b.net > 0
+                ? "bg-emerald-100 text-emerald-700"
+                : b.net < 0
+                ? "bg-rose-100 text-rose-700"
+                : "bg-gray-100 text-gray-700"
+            }`}
+          >
+            {b.net > 0 ? "+" : b.net < 0 ? "-" : ""}$
+            {Math.abs(b.net).toFixed(2)}
+          </span>
+        </li>
+      ))}
+    </ul>
   );
 }
 
