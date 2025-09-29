@@ -81,9 +81,13 @@ export default function DashboardPage() {
     (async () => {
       try {
         const res = await fetch(
-          (process.env.NEXT_PUBLIC_API_BASE_URL || "") + "/dashboard",
-          { headers: { Authorization: `Bearer ${token}` }, credentials: "omit" }
+          process.env.NEXT_PUBLIC_API_BASE_URL + "/user/dashboard",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            credentials: "omit",
+          }
         );
+        console.log("Dashboard fetch response:", res);
         if (!res.ok) throw new Error();
         const real: Dash = await res.json();
         setData(real);
