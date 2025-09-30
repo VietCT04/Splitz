@@ -99,14 +99,20 @@ export default function GroupDetail({
         );
         if (!res.ok) throw new Error("bad");
         const real: Group = await res.json();
-        real.expenses.reverse();
-        setGroup(real);
+        setGroup(real); // no reverse; we sort locally below
         setIsDemo(false);
       } catch {
         setIsDemo(true);
       }
     })();
   }, [groupId]);
+
+  // 🔽 sort like ActivityPage: newest first
+  const sortedExpenses = useMemo(() => {
+    return [...group.expenses]
+      .sort((a, b) => +new Date(b.date) - +new Date(a.date))
+      .slice(0, 10);
+  }, [group.expenses]);
 
   const perHead = useMemo(() => {
     if (!group.members.length || !group.expenses.length) return 0;
@@ -131,8 +137,7 @@ export default function GroupDetail({
     );
     if (g.ok) {
       const data: Group = await g.json();
-      data.expenses.reverse();
-      setGroup(data);
+      setGroup(data); // no reverse; rely on sortedExpenses
       setIsDemo(false);
     }
   }
@@ -293,8 +298,8 @@ export default function GroupDetail({
             </div>
 
             <ul className="rounded-xl border bg-white shadow-sm divide-y">
-              {group.expenses.length ? (
-                group.expenses.map((e) => (
+              {sortedExpenses.length ? (
+                sortedExpenses.map((e) => (
                   <li
                     key={e.id}
                     className="flex items-center justify-between p-4"
@@ -308,7 +313,7 @@ export default function GroupDetail({
                           {e.description}
                         </p>
                         <p className="text-xs text-gray-600">
-                          {e.date} · paid by{" "}
+                          {new Date(e.date).toLocaleDateString()} · paid by{" "}
                           <span className="font-medium">{e.paidBy ?? "—"}</span>
                         </p>
                       </div>
@@ -643,7 +648,6 @@ function SettleUpModal({
                     Authorization: `Bearer ${token}`,
                   },
                   credentials: "omit",
-                  // Back-end should infer payer from JWT; this marks the record as a settlement-like expense.
                   body: JSON.stringify({
                     groupId,
                     amount,
@@ -656,8 +660,9 @@ function SettleUpModal({
               toast.success("Settlement recorded");
               await onSuccess();
               onClose();
-            } catch {
-              const msg = e instanceof Error ? e.message : "Unexpected error";
+            } catch (err) {
+              const msg =
+                err instanceof Error ? err.message : "Unexpected error";
               toast.error("Could not record settlement", { description: msg });
             }
           }}
