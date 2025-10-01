@@ -122,9 +122,7 @@ export default function LoginForm(): React.JSX.Element {
       <button
         type="button"
         onClick={() =>
-          router.push(
-            "https://www.youtube.com/watch?v=3JVpAIJM2lw&list=RD0chK12qHGfM&index=27"
-          )
+          router.push("https://www.youtube.com/watch?v=IZF2HwLAFb0")
         }
         className="w-full rounded-xl bg-gray-900 px-3 py-2.5 text-sm font-semibold text-white hover:bg-black disabled:opacity-70"
       >

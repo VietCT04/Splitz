@@ -99,7 +99,7 @@ export default function GroupDetail({
         );
         if (!res.ok) throw new Error("bad");
         const real: Group = await res.json();
-        setGroup(real); // no reverse; we sort locally below
+        setGroup(real); 
         setIsDemo(false);
       } catch {
         setIsDemo(true);
