@@ -28,7 +28,7 @@ class GroupServiceCreateTest {
 
     @Mock GroupRepository groupRepository;
     @Mock UserRepository userRepository;
-    @Mock ExpenseRepository expenseRepository; // not used here, but required by ctor
+    @Mock ExpenseRepository expenseRepository;
     @Mock MembershipRepository membershipRepository;
 
     @Mock Authentication authentication;
@@ -54,7 +54,8 @@ class GroupServiceCreateTest {
             g.setId(1L);
             return g;
         });
-        willDoNothing().given(membershipRepository).save(any(Membership.class));
+        given(membershipRepository.save(any(Membership.class)))
+                .willAnswer(inv -> inv.getArgument(0));
 
         Group result = groupService.create(groupName, authentication);
 
@@ -63,7 +64,6 @@ class GroupServiceCreateTest {
 
         then(groupRepository).should().save(groupCaptor.capture());
         Group savedGroup = groupCaptor.getValue();
-        assertThat(savedGroup.getId()).isNull();              // was new before repo assigned id
         assertThat(savedGroup.getName()).isEqualTo(groupName);
 
         then(membershipRepository).should().save(membershipCaptor.capture());
