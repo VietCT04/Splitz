@@ -16,4 +16,4 @@ spring:
     enabled: false
 
 jwt:
-  secret: test-secret
+  secret: "03705944e0cc6b9d28d7b840beb0d5dd82f2a8228104d6b7a357c8d1c7eaae89"
