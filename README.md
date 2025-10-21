@@ -96,6 +96,7 @@ GET /activities  # get activities dashboard data
 ```
 
 ### User
+
 ```http
 GET /user/dashboard  # get user's dashboard data
 DELETE /user # delete user
@@ -107,7 +108,6 @@ DELETE /user # delete user
 - State: SWR/React Query or simple fetch hooks
 - Tailwind for quick UI; responsive layout
 
-
 ## 🔭 Roadmap (nice next steps)
 
 - Swagger (OpenAPI) docs at `/swagger-ui.html`
@@ -117,6 +117,16 @@ DELETE /user # delete user
 - Observability: Prometheus metrics + Grafana dashboard
 - Basic rate‑limit at Ingress/API gateway
 - Email invites & password reset
+
+---
+
+## 📘 Documentation
+
+- **API Docs:** OpenAPI 3 (springdoc-openapi) with **Swagger UI**.
+- **UI:** `/swagger-ui/index.html`
+- **Spec JSON:** `/v3/api-docs`
+
+_(We use Swagger/OpenAPI for interactive API documentation; see codebase for details.)_
 
 ---
 
